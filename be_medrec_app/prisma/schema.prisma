@@ -56,10 +56,23 @@ model User {
   
 model Patient {
   id            Int      @id @default(autoincrement())
+  nik           String   @unique
   name          String   
   age           Int
   gender        Gender
+  birthdate     DateTime @db.Date
+  phone         String
+  address       String
   recordNumber  String   @unique
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  visit Visit[]
+}
+
+model Poli {
+  id            Int      @id @default(autoincrement())
+  name          String   @unique
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -70,7 +83,7 @@ model Queue {
   id            Int      @id @default(autoincrement())
   visitId       Int      @unique
   queueNumber   String   
-  queueDate     DateTime @default(now()) @db.Date
+  queueDate     DateTime @db.Date
   status        QueueStatus   @default(MENUNGGU)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -85,6 +98,7 @@ model Visit {
   id            Int      @id @default(autoincrement())
   patientId     Int
   doctorId      Int
+  poliId        Int
   recepsionistId   Int
   visitDate     DateTime
   description   String   @db.Text
@@ -93,10 +107,11 @@ model Visit {
   updatedAt     DateTime @updatedAt
 
   patient       Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  poli          Poli     @relation(fields: [poliId], references: [id])
   doctor        User     @relation("DoctorVisits", fields: [doctorId], references: [id])
   recepsionist  User     @relation("ReceptionistVisits", fields: [recepsionistId], references: [id])
 
-  medicalRecords MedicalRecord[]
+  medicalRecords MedicalRecord?
   queue          Queue?
 }
 
@@ -110,6 +125,6 @@ model MedicalRecord {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  user          User     @relation(fields: [doctorId], references: [id])
+  doctor          User     @relation(fields: [doctorId], references: [id])
   visit         Visit    @relation(fields: [visitId], references: [id], onDelete: Cascade)
 }
