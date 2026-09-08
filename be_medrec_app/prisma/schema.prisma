@@ -1,0 +1,115 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+  
+// Get a free hosted MySQL database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+enum Role {
+  ADMIN
+  DOKTER
+  PENDAFTARAN
+}
+
+enum Gender {
+  L
+  P
+}
+
+enum QueueStatus {
+  MENUNGGU
+  DIPANGGIL
+  SELESAI
+  DILEWATI
+  BATAL
+}
+
+enum VisitStatus {
+  MENUNGGU
+  CHECK_IN
+  PEMERIKSAAN
+  SELESAI
+  BATAL
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(ADMIN)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  doctorVisits       Visit[] @relation("DoctorVisits")
+  receptionistVisits Visit[] @relation("ReceptionistVisits")
+
+  medicalRecords MedicalRecord[]
+}
+  
+model Patient {
+  id            Int      @id @default(autoincrement())
+  name          String   
+  age           Int
+  gender        Gender
+  recordNumber  String   @unique
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  visit Visit[]
+}
+
+model Queue {
+  id            Int      @id @default(autoincrement())
+  visitId       Int      @unique
+  queueNumber   String   
+  queueDate     DateTime @default(now()) @db.Date
+  status        QueueStatus   @default(MENUNGGU)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  visit         Visit    @relation(fields: [visitId], references: [id], onDelete: Cascade)
+
+  @@unique([queueDate, queueNumber])
+  @@index([queueDate])
+}
+
+model Visit {
+  id            Int      @id @default(autoincrement())
+  patientId     Int
+  doctorId      Int
+  recepsionistId   Int
+  visitDate     DateTime
+  description   String   @db.Text
+  status        VisitStatus   @default(MENUNGGU)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  patient       Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctor        User     @relation("DoctorVisits", fields: [doctorId], references: [id])
+  recepsionist  User     @relation("ReceptionistVisits", fields: [recepsionistId], references: [id])
+
+  medicalRecords MedicalRecord[]
+  queue          Queue?
+}
+
+model MedicalRecord {
+  id            Int      @id @default(autoincrement())
+  doctorId      Int
+  visitId       Int      @unique
+  diagnosis     String   @db.Text
+  actionPlan    String   @db.Text
+  receipt       String   @db.Text
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user          User     @relation(fields: [doctorId], references: [id])
+  visit         Visit    @relation(fields: [visitId], references: [id], onDelete: Cascade)
+}
