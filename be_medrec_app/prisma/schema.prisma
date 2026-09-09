@@ -119,12 +119,17 @@ model MedicalRecord {
   id            Int      @id @default(autoincrement())
   doctorId      Int
   visitId       Int      @unique
+  bloodTension  String  
+  temperature   String
+  height        Float
+  weight        Float
   diagnosis     String   @db.Text
+  symptom       String   @db.Text
   actionPlan    String   @db.Text
   receipt       String   @db.Text
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  doctor          User     @relation(fields: [doctorId], references: [id])
+  doctor        User     @relation(fields: [doctorId], references: [id])
   visit         Visit    @relation(fields: [visitId], references: [id], onDelete: Cascade)
 }

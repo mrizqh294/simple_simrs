@@ -51,13 +51,6 @@ export const createPatient = async (req, res) => {
 
     const { nik, name, age, gender, birthdate, phone, address } = req.body;
 
-    if (!name || !age || !gender || !nik || !birthdate || !phone || !address) {
-      return res.status(400).json({
-        success: false,
-        message: "Semua field wajib diisi",
-      });
-    }
-
     const parsedData = patientSchema.safeParse({
       nik,
       name,
@@ -225,13 +218,6 @@ export const updatePatient = async (req, res) => {
     }
 
     const { nik, name, age, gender, birthdate, phone, address } = req.body;
-
-    if (!name || !age || !gender || !nik || !birthdate || !phone || !address) {
-      return res.status(400).json({
-        success: false,
-        message: "Semua field wajib diisi",
-      });
-    }
 
     const parsedData = patientSchema.safeParse({
       nik,

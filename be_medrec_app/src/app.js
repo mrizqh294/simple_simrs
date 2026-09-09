@@ -2,7 +2,9 @@ import 'dotenv/config';
 
 import userRoutes from './routes/userRoutes.js';
 import authRoutes from './routes/authRoutes.js';
-import patientRoutes from './routes/patientRoutes.js'
+import patientRoutes from './routes/patientRoutes.js';
+import registrationRoutes from './routes/registrationRoutes.js';
+import visitRoutes from './routes/visitRoutes.js';
 import express from 'express';
 import cookieParser from 'cookie-parser';
 
@@ -13,7 +15,7 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-app.use('/api', authRoutes, userRoutes, patientRoutes);
+app.use('/api', authRoutes, userRoutes, patientRoutes, registrationRoutes, visitRoutes);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);

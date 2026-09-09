@@ -131,7 +131,7 @@ export const getUserById = async (req, res) => {
 
     const currentUserRole = req.current_user_role;
 
-    if (currentUserRole.role !== "ADMIN") {
+    if (currentUserRole !== "ADMIN") {
       return res.status(401).json({
         success: false,
         message: "Anda tidak memiliki izin untuk melakukan tindakan ini",
@@ -165,7 +165,7 @@ export const deleteUser = async (req, res) => {
   try {
     const currentUserRole = req.current_user_role;
 
-    if (currentUserRole.role !== "ADMIN") {
+    if (currentUserRole !== "ADMIN") {
       return res.status(401).json({
         success: false,
         message: "Anda tidak memiliki izin untuk melakukan tindakan ini",
