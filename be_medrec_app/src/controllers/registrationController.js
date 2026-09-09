@@ -1,7 +1,6 @@
 import * as z from "zod";
 import { prisma } from "./../config/database.js";
 
-
 // POST /registration
 
 export const registerPatient = async (req, res) => {
@@ -112,7 +111,7 @@ export const registerPatient = async (req, res) => {
       },
     });
 
-    if (!doctor || doctor !== "DOKTER") {
+    if (!doctor || doctor.role !== "DOKTER") {
       return res.status(404).json({
         success: false,
         message: "Dokter tidak ditemukan",
@@ -138,7 +137,7 @@ export const registerPatient = async (req, res) => {
       },
     });
 
-    if (!recepsionist || recepsionist !== "PENDAFTARAN") {
+    if (!recepsionist || recepsionist.role !== "PENDAFTARAN") {
       return res.status(404).json({
         success: false,
         message: "Petugas pendaftaran tidak ditemukan",
@@ -152,7 +151,7 @@ export const registerPatient = async (req, res) => {
           name,
           age,
           gender,
-          birthdate,
+          birthdate: new Date(birthdate),
           phone,
           address,
           recordNumber,
@@ -233,7 +232,7 @@ export const getVisits = async (req, res) => {
       });
     }
 
-    const visits = await prisma.visits.findMany({
+    const visits = await prisma.visit.findMany({
       include: {
         patient: {
           select: {
@@ -269,9 +268,16 @@ export const getVisits = async (req, res) => {
   }
 };
 
-// PATCH registtration/:id
+// PATCH registration/:id
 
 export const updateVisit = async (req, res) => {
+  const visitSchema = z.object({
+    patientId: z.number().int().positive(),
+    doctorId: z.number().int().positive(),
+    description: z.string().min(2).max(1000),
+    status: z.enum(["MENUNGGU", "CHECK_IN", "PEMERIKSAAN", "SELESAI", "BATAL"]),
+  });
+
   try {
     const currentUserRole = req.current_user_role;
 
@@ -282,12 +288,13 @@ export const updateVisit = async (req, res) => {
       });
     }
 
-    const { patientId, doctorId, description } = req.body;
+    const { patientId, doctorId, description, status } = req.body;
 
     const parsedData = visitSchema.safeParse({
       patientId,
       doctorId,
       description,
+      status,
     });
 
     if (!parsedData.success) {
@@ -307,7 +314,7 @@ export const updateVisit = async (req, res) => {
 
     const { id } = req.params;
 
-    const existingVisit = await prisma.visits.findUnique({
+    const existingVisit = await prisma.visit.findUnique({
       where: {
         id: Number(id),
       },
@@ -320,7 +327,7 @@ export const updateVisit = async (req, res) => {
       });
     }
 
-    const visit = await prisma.visits.update({
+    const visit = await prisma.visit.update({
       where: {
         id: Number(id),
       },

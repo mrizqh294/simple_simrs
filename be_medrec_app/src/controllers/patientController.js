@@ -69,6 +69,19 @@ export const createPatient = async (req, res) => {
       });
     }
 
+    const existingPatient = await prisma.patient.findUnique({
+      where: {
+        nik,
+      },
+    });
+
+    if (existingPatient) {
+      return res.status(400).json({
+        success: false,
+        message: "Pasien dengan NIK tersebut sudah terdaftar",
+      });
+    }
+
     const lastPatient = await prisma.patient.findFirst({
       orderBy: {
         id: "desc",
