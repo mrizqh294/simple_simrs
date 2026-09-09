@@ -1,17 +1,16 @@
 import { useState } from "react";
-import Header from "./assets/components/Header";
-import Sidebar from "./assets/components/Sidebar";
-import StatCard from "./assets/components/Statcard";
-import Input from "./assets/components/Input";
-import Select from "./assets/components/Select";
-import Textarea from "./assets/components/Textarea";
-import Modal from "./assets/components/Modal";
 
-const DashboardPendaftaran = () => {
-  const [activeMenu, setActiveMenu] = useState("Dashboard");
+import StatCard from "../../components/Statcard";
+import Input from "../../components/Input";
+import Select from "../../components/Select";
+import Textarea from "../../components/Textarea";
+import Modal from "../../components/Modal";
+
+const DashboardRecepsionist = () => {
+
   const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState([]);
-  const [showRegistration, setShowRegistration] = useState(false);
+
+  const [formData, setFormData] = useState({});
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -35,7 +34,10 @@ const DashboardPendaftaran = () => {
       poliId: Number(formData.poliId),
       recepsionistId: Number(formData.recepsionistId),
     };
-    onSubmit(data);
+
+    console.log("Data yang disubmit:", data);
+    alert("Registrasi berhasil!");
+    closeModal();
   };
 
   const stats = [
@@ -56,69 +58,52 @@ const DashboardPendaftaran = () => {
     },
   ];
 
-  const PENDAFTARAN_MENUS = [
-    { id: "dashboard", label: "Dashboard" },
-    { id: "users", label: "Registrasi" },
-    { id: "patients", label: "Antrean" },
-  ];
-
   return (
-    <div className="min-h-screen bg-gray-100">
-      <Sidebar
-        activeMenu={activeMenu}
-        setActiveMenu={setActiveMenu}
-        menuItems={PENDAFTARAN_MENUS}
-      />
-      <main className="ml-64 min-h-screen bg-gray-50">
-        {/* Header */}
+    <>
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-6">
+          <h1 className="text-2xl font-semibold text-gray-800">Dashboard</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            Kelola pendaftaran dan data pasien hari ini.
+          </p>
+        </div>
 
-        <Header />
+        {/* Statistic Cards */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {stats.map((stat) => (
+            <StatCard
+              key={stat.title}
+              title={stat.title}
+              value={stat.value}
+              description={stat.description} 
+            />
+          ))}
+        </div>
 
-        <div className="mx-auto max-w-7xl p-6">
-          <div className="mb-6">
-            <h1 className="text-2xl font-semibold text-gray-800">Dashboard</h1>
-
-            <p className="mt-1 text-sm text-gray-500">
-              Kelola pendaftaran dan data pasien hari ini.
-            </p>
-          </div>
-
-          {/* Statistic Cards */}
-
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {stats.map((stat) => (
-              <StatCard
-                key={stat.title}
-                title={stat.title}
-                value={stat.value}
-              />
-            ))}
-          </div>
-
-          {/* Registration Action */}
-          <div className="mt-6 rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
-            <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-              <div>
-                <h2 className="text-base font-semibold text-gray-800">
-                  Registrasi Pasien
-                </h2>
-
-                <p className="mt-1 text-sm text-gray-500">
-                  Daftarkan pasien baru untuk mendapatkan nomor antrian.
-                </p>
-              </div>
-
-              <button
-                type="button"
-                onClick={openModal}
-                className="rounded-lg bg-green-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-              >
+        {/* Registration Action */}
+        <div className="mt-6 rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+          <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+            <div>
+              <h2 className="text-base font-semibold text-gray-800">
                 Registrasi Pasien
-              </button>
+              </h2>
+
+              <p className="mt-1 text-sm text-gray-500">
+                Daftarkan pasien baru untuk mendapatkan nomor antrian.
+              </p>
             </div>
+
+            <button
+              type="button"
+              onClick={openModal}
+              className="rounded-lg bg-green-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+            >
+              Registrasi Pasien
+            </button>
           </div>
         </div>
-      </main>
+      </div>
+
       <Modal
         show={showModal}
         onClose={closeModal}
@@ -142,7 +127,7 @@ const DashboardPendaftaran = () => {
                 <Input
                   label="NIK"
                   name="nik"
-                  value={formData.nik}
+                  value={formData.nik || ""} 
                   onChange={handleChange}
                   placeholder="Masukkan NIK"
                   required
@@ -150,7 +135,7 @@ const DashboardPendaftaran = () => {
                 <Input
                   label="Nama Lengkap"
                   name="name"
-                  value={formData.name}
+                  value={formData.name || ""}
                   onChange={handleChange}
                   placeholder="Masukkan nama lengkap"
                   required
@@ -160,7 +145,7 @@ const DashboardPendaftaran = () => {
                   name="age"
                   type="number"
                   min="0"
-                  value={formData.age}
+                  value={formData.age || ""}
                   onChange={handleChange}
                   placeholder="Masukkan umur"
                   required
@@ -168,7 +153,7 @@ const DashboardPendaftaran = () => {
                 <Select
                   label="Jenis Kelamin"
                   name="gender"
-                  value={formData.gender}
+                  value={formData.gender || ""}
                   onChange={handleChange}
                   required
                   options={[
@@ -181,7 +166,7 @@ const DashboardPendaftaran = () => {
                   label="Tanggal Lahir"
                   name="birthdate"
                   type="date"
-                  value={formData.birthdate}
+                  value={formData.birthdate || ""}
                   onChange={handleChange}
                   required
                 />
@@ -189,7 +174,7 @@ const DashboardPendaftaran = () => {
                   label="No. Telepon"
                   name="phone"
                   type="tel"
-                  value={formData.phone}
+                  value={formData.phone || ""}
                   onChange={handleChange}
                   placeholder="Masukkan nomor telepon"
                   required
@@ -198,7 +183,7 @@ const DashboardPendaftaran = () => {
                   <Textarea
                     label="Alamat"
                     name="address"
-                    value={formData.address}
+                    value={formData.address || ""}
                     onChange={handleChange}
                     placeholder="Masukkan alamat lengkap pasien"
                     rows={3}
@@ -221,7 +206,7 @@ const DashboardPendaftaran = () => {
                 <Select
                   label="Poli"
                   name="poliId"
-                  value={formData.poliId}
+                  value={formData.poliId || ""}
                   onChange={handleChange}
                   required
                   options={[
@@ -234,7 +219,7 @@ const DashboardPendaftaran = () => {
                 <Select
                   label="Dokter"
                   name="doctorId"
-                  value={formData.doctorId}
+                  value={formData.doctorId || ""}
                   onChange={handleChange}
                   required
                   options={[
@@ -248,14 +233,14 @@ const DashboardPendaftaran = () => {
                   label="Tanggal Kunjungan"
                   name="visitDate"
                   type="date"
-                  value={formData.visitDate}
+                  value={formData.visitDate || ""}
                   onChange={handleChange}
                   required
                 />
                 <Input
                   label="Petugas Pendaftaran"
                   name="recepsionistId"
-                  value={formData.recepsionistId}
+                  value={formData.recepsionistId || ""}
                   onChange={handleChange}
                   placeholder="ID petugas pendaftaran"
                   required
@@ -275,7 +260,7 @@ const DashboardPendaftaran = () => {
               <Textarea
                 label="Keterangan"
                 name="description"
-                value={formData.description}
+                value={formData.description || ""}
                 onChange={handleChange}
                 placeholder="Masukkan keluhan atau keterangan pasien"
                 rows={4}
@@ -301,8 +286,8 @@ const DashboardPendaftaran = () => {
           </div>
         </form>
       </Modal>
-    </div>
+    </>
   );
 };
 
-export default DashboardPendaftaran;
+export default DashboardRecepsionist;
