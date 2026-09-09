@@ -5,6 +5,15 @@ import { prisma } from "./../config/database.js";
 export const createUser = async (req, res) => {
   try {
 
+    const currentUserRole = req.current_user_role;
+
+    if (currentUserRole !== "ADMIN") {
+      return res.status(401).json({
+        success: false,
+        message: "Anda tidak memiliki izin untuk melakukan tindakan ini",
+      });
+    }
+
     const userSchema = z.object({
       name: z.string().min(2).max(100),
       email: z.string().email(),
@@ -13,13 +22,6 @@ export const createUser = async (req, res) => {
     });
 
     const { name, email, password, role } = req.body;
-
-    if (!name || !email || !password || !role) {
-      return res.status(400).json({
-        success: false,
-        message: "Semua field wajib diisi",
-      });
-    }
 
     const parsedData = userSchema.safeParse({
       name,
@@ -84,7 +86,7 @@ export const getUsers = async (req, res) => {
 
     const currentUserRole = req.current_user_role;
 
-    if (currentUserRole !== "ADMIN") {
+    if (currentUserRole !== "ADMIN" && currentUserRole !== "PENDAFTARAN") {
       return res.status(401).json({
         success: false,
         message: "Anda tidak memiliki izin untuk melakukan tindakan ini",

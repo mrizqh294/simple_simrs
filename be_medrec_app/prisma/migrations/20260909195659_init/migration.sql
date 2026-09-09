@@ -15,13 +15,18 @@ CREATE TABLE `User` (
 -- CreateTable
 CREATE TABLE `Patient` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `nik` VARCHAR(191) NOT NULL,
     `name` VARCHAR(191) NOT NULL,
     `age` INTEGER NOT NULL,
     `gender` ENUM('L', 'P') NOT NULL,
+    `birthdate` DATE NOT NULL,
+    `phone` VARCHAR(191) NOT NULL,
+    `address` VARCHAR(191) NOT NULL,
     `recordNumber` VARCHAR(191) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
+    UNIQUE INDEX `Patient_nik_key`(`nik`),
     UNIQUE INDEX `Patient_recordNumber_key`(`recordNumber`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -74,7 +79,12 @@ CREATE TABLE `MedicalRecord` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `doctorId` INTEGER NOT NULL,
     `visitId` INTEGER NOT NULL,
+    `bloodTension` VARCHAR(191) NOT NULL,
+    `temperature` VARCHAR(191) NOT NULL,
+    `height` DOUBLE NOT NULL,
+    `weight` DOUBLE NOT NULL,
     `diagnosis` TEXT NOT NULL,
+    `symptom` TEXT NOT NULL,
     `actionPlan` TEXT NOT NULL,
     `receipt` TEXT NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),

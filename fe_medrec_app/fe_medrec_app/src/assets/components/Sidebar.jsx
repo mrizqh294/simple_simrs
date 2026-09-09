@@ -68,7 +68,7 @@ export default function Sidebar({ menuItems }) {
           </div> */}
 
           <div className="min-w-0">
-            <p className="text-gray-500 hover:bg-gray-50 hover:text-gray-800">Logout</p>
+            <p className="text-gray-500 hover:text-gray-800">Logout</p>
           </div>
         </div>
       </div>
