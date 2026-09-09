@@ -1,16 +1,105 @@
-# React + Vite
+# Medical Record Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend aplikasi **Medical Record** menggunakan **React.js**, **Vite**, dan **Tailwind CSS**.
 
-Currently, two official plugins are available:
+## Requirements
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Pastikan perangkat sudah memiliki:
 
-## React Compiler
+- Node.js
+- npm
+- Git
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Installation
 
-## Expanding the ESLint configuration
+### 1. Install Dependencies
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Setelah project berhasil di-clone, masuk ke folder project kemudian jalankan:
+
+```bash
+npm install
+```
+
+### 2. Konfigurasi Environment
+
+Buat file `.env` pada root project.
+
+Contoh:
+
+```env
+VITE_BASE_URL=http://localhost:5000
+```
+
+Sesuaikan nilai `VITE_BASE_URL` dengan URL API backend yang digunakan.
+
+Contoh struktur project:
+
+```text
+project-folder/
+├── .env
+├── package.json
+├── vite.config.js
+├── index.html
+└── src/
+```
+
+> Jangan commit file `.env` ke repository jika file tersebut berisi konfigurasi yang bersifat rahasia.
+
+### 3. Jalankan Project
+
+Jalankan project dalam mode development:
+
+```bash
+npm run dev
+```
+
+Setelah berhasil dijalankan, Vite akan menampilkan alamat aplikasi pada terminal, biasanya:
+
+```text
+http://localhost:5173
+```
+
+Buka alamat tersebut melalui browser.
+
+## Environment Variable
+
+Variable environment yang digunakan:
+
+| Variable | Keterangan |
+|---|---|
+| `VITE_BASE_URL` | URL utama API backend |
+
+Contoh:
+
+```env
+VITE_BASE_URL=http://localhost:5000
+```
+
+## Tech Stack
+
+- React.js
+- Vite
+- Tailwind CSS
+- React Router
+
+## Quick Start
+
+Untuk menjalankan project dari awal:
+
+```bash
+npm install
+```
+
+Buat file `.env`:
+
+```env
+VITE_BASE_URL=http://localhost:5000
+```
+
+Kemudian jalankan:
+
+```bash
+npm run dev
+```
+
+Project siap digunakan.
