@@ -2,6 +2,7 @@ import * as z from "zod";
 import bcrypt from "bcryptjs";
 import { prisma } from "./../config/database.js";
 import { createToken } from "./../lib/jwt.js";
+import { getCurrentUser } from "../lib/auth.js";
 
 export const login = async (req, res) => {
   try {
@@ -87,6 +88,43 @@ export const logout = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Terjadi kesalahan pada server",
+    });
+  }
+};
+
+export const getMe = async (req, res) => {
+  try {
+    const currentUser = await getCurrentUser(req);
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id: Number(currentUser.userId),
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User tidak ditemukan",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Terjadi kesalahan server",
     });
   }
 };

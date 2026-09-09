@@ -1,45 +1,58 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Modal from "../../components/Modal";
 import Textarea from "../../components/Textarea";
 import Input from "../../components/Input";
+import Select from "../../components/Select";
+import { Table, Th, Td, EmptyRow } from "../../components/Table";
+import { getPatients } from "../../services/patientServices";
+import { registerPatient } from "../../services/registrationServices";
+import { getPoli } from "../../services/poliServices";
+import { getDoctors } from "../../services/userServices";
+import { createVisit } from "../../services/visitServices";
+import { updatePatient } from "../../services/patientServices";
+
 const Registration = () => {
   const [search, setSearch] = useState("");
-  const [showModal, setShowModal] = useState(false);
-  const patients = [
-    {
-      id: 1,
-      recordNumber: "RM-20260001",
-      nik: "3212345678900001",
-      name: "Muhammad Rizki",
-      age: 22,
-      gender: "L",
-      birthdate: "2004-04-29",
-      phone: "081234567890",
-      address: "Subang",
-    },
-    {
-      id: 2,
-      recordNumber: "RM-20260002",
-      nik: "3212345678900002",
-      name: "Siti Aminah",
-      age: 35,
-      gender: "P",
-      birthdate: "1991-02-12",
-      phone: "081234567891",
-      address: "Bandung",
-    },
-    {
-      id: 3,
-      recordNumber: "RM-20260003",
-      nik: "3212345678900003",
-      name: "Andi Setiawan",
-      age: 41,
-      gender: "L",
-      birthdate: "1985-07-21",
-      phone: "081234567892",
-      address: "Sumedang",
-    },
-  ];
+  const [formData, setFormData] = useState({});
+  const [patients, setPatients] = useState([]);
+  const [polies, setPolies] = useState([]);
+  const [doctors, setDoctors] = useState([]);
+  const [activeModal, setActiveModal] = useState(null);
+  const [selectedPatient, setSelectedPatient] = useState(null);
+
+  const fetchPoli = async () => {
+    try {
+      const result = await getPoli();
+      setPolies(result.data || result);
+    } catch (error) {
+      console.error("Gagal memuat data poli:", error.message);
+    }
+  };
+
+  const fetchDoctors = async () => {
+    try {
+      const result = await getDoctors();
+      setDoctors(result.data || result);
+    } catch (error) {
+      console.error("Gagal memuat data dokter:", error.message);
+    }
+  };
+
+  const fetchPatients = async () => {
+    try {
+      const result = await getPatients();
+      setPatients(result.data || result);
+    } catch (error) {
+      console.error("Gagal memuat data pasien:", error.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchPoli();
+    fetchPatients();
+    fetchDoctors();
+  }, []);
+
   const filteredPatients = patients.filter((patient) => {
     const keyword = search.toLowerCase();
     return (
@@ -48,12 +61,140 @@ const Registration = () => {
       patient.recordNumber.toLowerCase().includes(keyword)
     );
   });
+
+  const openRegisterModal = () => {
+    setActiveModal("register");
+  };
+
+  const openVisitModal = (patient) => {
+    setSelectedPatient(patient);
+    setActiveModal("visit");
+  };
+
+  const openEditModal = (patient) => {
+    setSelectedPatient(patient);
+    setActiveModal("edit");
+
+    setFormData({
+      nik: patient.nik,
+      name: patient.name,
+      age: patient.age,
+      gender: patient.gender,
+      birthdate: patient.birthdate ? patient.birthdate.split("T")[0] : "",
+      phone: patient.phone,
+      address: patient.address,
+    });
+  };
+
+  const closeModal = () => {
+    setActiveModal(null);
+    setSelectedPatient(null);
+  };
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  //   const handleSubmit = async (event) => {
+  //     event.preventDefault();
+
+  //     try {
+  //       const data = {
+  //         ...formData,
+  //         age: Number(formData.age),
+  //         poliId: Number(formData.poliId),
+  //         doctorId: Number(formData.doctorId),
+  //       };
+
+  //       const result = await registerPatient(data);
+
+  //       if (!result.success) {
+  //         alert(result.message || "Registrasi pasien gagal");
+  //         return;
+  //       }
+
+  //       alert(result.message || "Registrasi berhasil!");
+
+  //       await fetchPatients();
+
+  //       closeModal();
+  //     } catch (error) {
+  //       console.error("Gagal mendaftarkan pasien:", error.message);
+
+  //       alert(error.message || "Terjadi kesalahan saat registrasi pasien");
+  //     }
+  //   };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    try {
+      let data;
+      let result;
+
+      if (activeModal === "register") {
+        data = {
+          ...formData,
+          age: Number(formData.age),
+          poliId: Number(formData.poliId),
+          doctorId: Number(formData.doctorId),
+        };
+
+        result = await registerPatient(data);
+      }
+
+      if (activeModal === "visit") {
+        data = {
+          patientId: selectedPatient.id,
+          poliId: Number(formData.poliId),
+          doctorId: Number(formData.doctorId),
+          description: formData.description,
+        };
+
+        result = await createVisit(data);
+      }
+
+      if (activeModal === "edit") {
+        data = {
+          nik: formData.nik,
+          name: formData.name,
+          age: Number(formData.age),
+          gender: formData.gender,
+          birthdate: formData.birthdate,
+          phone: formData.phone,
+          address: formData.address,
+        };
+
+        result = await updatePatient(selectedPatient.id, data);
+      }
+
+      if (!result?.success) {
+        alert(result?.message || "Proses gagal");
+        return;
+      }
+
+      alert(result.message || "Proses berhasil");
+
+      await fetchPatients();
+
+      setFormData({});
+      closeModal();
+    } catch (error) {
+      console.error("Terjadi kesalahan:", error.message);
+
+      alert(error.message || "Terjadi kesalahan pada server");
+    }
+  };
+
   const handleEdit = (patient) => {
     console.log("Edit pasien:", patient);
   };
+
   const handleAddVisit = (patient) => {
     console.log("Tambah kunjungan:", patient);
   };
+
   return (
     <>
       <div>
@@ -92,7 +233,7 @@ const Registration = () => {
               {/* REGISTER BUTTON */}
               <button
                 type="button"
-                onClick={() => setShowModal(true)}
+                onClick={openRegisterModal}
                 className="rounded-lg bg-green-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
               >
                 Registrasi Pasien Baru
@@ -100,87 +241,74 @@ const Registration = () => {
             </div>
           </div>
           {/* TABLE */}
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-250 text-left text-sm">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-5 py-3 font-medium text-gray-500">No</th>
-                  <th className="px-5 py-3 font-medium text-gray-500">
-                    No. Rekam Medis
-                  </th>
-                  <th className="px-5 py-3 font-medium text-gray-500">NIK</th>
-                  <th className="px-5 py-3 font-medium text-gray-500">Nama</th>
-                  <th className="px-5 py-3 font-medium text-gray-500">Umur</th>
-                  <th className="px-5 py-3 font-medium text-gray-500">
-                    Jenis Kelamin
-                  </th>
-                  <th className="px-5 py-3 font-medium text-gray-500">
-                    No. Telepon
-                  </th>
-                  <th className="px-5 py-3 text-center font-medium text-gray-500">
-                    Aksi
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {filteredPatients.length > 0 ? (
-                  filteredPatients.map((patient, index) => (
-                    <tr
-                      key={patient.id}
-                      className="transition hover:bg-gray-50"
-                    >
-                      <td className="px-5 py-4 text-gray-500">{index + 1}</td>
-                      <td className="px-5 py-4 font-medium text-gray-700">
+          <Table>
+            <thead>
+              <tr>
+                <Th>No</Th>
+                <Th>No. Rekam Medis</Th>
+                <Th>NIK</Th>
+                <Th>Nama</Th>
+                <Th>Umur</Th>
+                <Th>Jenis Kelamin</Th>
+                <Th>No. Telepon</Th>
+                <Th className="text-center">Aksi</Th>
+              </tr>
+            </thead>
+
+            <tbody className="divide-y divide-gray-100">
+              {filteredPatients.length > 0 ? (
+                filteredPatients.map((patient, index) => (
+                  <tr key={patient.id} className="transition hover:bg-gray-50">
+                    <Td>{index + 1}</Td>
+
+                    <Td>
+                      <span className="font-medium text-gray-700">
                         {patient.recordNumber}
-                      </td>
-                      <td className="px-5 py-4 text-gray-600">{patient.nik}</td>
-                      <td className="px-5 py-4 font-medium text-gray-800">
+                      </span>
+                    </Td>
+
+                    <Td>{patient.nik}</Td>
+
+                    <Td>
+                      <span className="font-medium text-gray-800">
                         {patient.name}
-                      </td>
-                      <td className="px-5 py-4 text-gray-600">
-                        {patient.age} tahun
-                      </td>
-                      <td className="px-5 py-4 text-gray-600">
-                        {patient.gender === "L" ? "Laki-laki" : "Perempuan"}
-                      </td>
-                      <td className="px-5 py-4 text-gray-600">
-                        {patient.phone}
-                      </td>
-                      <td className="px-5 py-4">
-                        <div className="flex items-center justify-center gap-2">
-                          {/* EDIT */}
-                          <button
-                            type="button"
-                            onClick={() => handleEdit(patient)}
-                            className="rounded-lg border border-gray-200 px-3 py-2 text-xs font-medium text-gray-600 transition hover:bg-gray-50 hover:text-gray-800"
-                          >
-                            Edit
-                          </button>
-                          {/* ADD VISIT */}
-                          <button
-                            type="button"
-                            onClick={() => handleAddVisit(patient)}
-                            className="rounded-lg bg-green-50 px-3 py-2 text-xs font-medium text-green-700 transition hover:bg-green-100"
-                          >
-                            Tambah Kunjungan
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td
-                      colSpan="8"
-                      className="px-5 py-10 text-center text-sm text-gray-400"
-                    >
-                      Data pasien tidak ditemukan.
-                    </td>
+                      </span>
+                    </Td>
+
+                    <Td>{patient.age} tahun</Td>
+
+                    <Td>
+                      {patient.gender === "L" ? "Laki-laki" : "Perempuan"}
+                    </Td>
+
+                    <Td>{patient.phone}</Td>
+
+                    <Td className="text-center">
+                      <div className="flex items-center justify-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => openEditModal(patient)}
+                          className="rounded-lg border border-gray-200 px-3 py-2 text-xs font-medium text-gray-600 transition hover:bg-gray-50 hover:text-gray-800"
+                        >
+                          Edit
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => openVisitModal(patient)}
+                          className="rounded-lg bg-green-50 px-3 py-2 text-xs font-medium text-green-700 transition hover:bg-green-100"
+                        >
+                          Tambah Kunjungan
+                        </button>
+                      </div>
+                    </Td>
                   </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                ))
+              ) : (
+                <EmptyRow colSpan={8} message="Data pasien tidak ditemukan." />
+              )}
+            </tbody>
+          </Table>
           {/* TABLE FOOTER */}
           <div className="border-t border-gray-100 px-5 py-4">
             <p className="text-xs text-gray-400">
@@ -190,21 +318,18 @@ const Registration = () => {
           </div>
         </div>
       </div>
+
       {/* MODAL REGISTRASI PASIEN BARU */}
       <Modal
-        show={showModal}
-        onClose={() => setShowModal(false)}
+        show={activeModal === "register"}
+        onClose={closeModal}
         title="Registrasi Pasien Baru"
         description="Masukkan data pasien untuk membuat data rekam medis baru."
         size="4xl"
       >
-        <form
-          onSubmit={(event) => {
-            event.preventDefault();
-            console.log("Registrasi pasien");
-          }}
-        >
+        <form onSubmit={handleSubmit}>
           <div className="space-y-6 px-6 py-5">
+            {/* DATA PASIEN */}
             <div>
               <div className="mb-4">
                 <h3 className="text-sm font-semibold text-gray-800">
@@ -218,12 +343,16 @@ const Registration = () => {
                 <Input
                   label="NIK"
                   name="nik"
+                  value={formData.nik || ""}
+                  onChange={handleChange}
                   placeholder="Masukkan NIK"
                   required
                 />
                 <Input
                   label="Nama Lengkap"
                   name="name"
+                  value={formData.name || ""}
+                  onChange={handleChange}
                   placeholder="Masukkan nama lengkap"
                   required
                 />
@@ -232,47 +361,304 @@ const Registration = () => {
                   name="age"
                   type="number"
                   min="0"
+                  value={formData.age || ""}
+                  onChange={handleChange}
                   placeholder="Masukkan umur"
                   required
+                />
+                <Select
+                  label="Jenis Kelamin"
+                  name="gender"
+                  value={formData.gender || ""}
+                  onChange={handleChange}
+                  required
+                  options={[
+                    { value: "", label: "Pilih jenis kelamin" },
+                    { value: "L", label: "Laki-laki" },
+                    { value: "P", label: "Perempuan" },
+                  ]}
                 />
                 <Input
                   label="Tanggal Lahir"
                   name="birthdate"
                   type="date"
+                  value={formData.birthdate || ""}
+                  onChange={handleChange}
                   required
                 />
                 <Input
                   label="No. Telepon"
                   name="phone"
                   type="tel"
+                  value={formData.phone || ""}
+                  onChange={handleChange}
                   placeholder="Masukkan nomor telepon"
                   required
                 />
+                <div className="md:col-span-2">
+                  <Textarea
+                    label="Alamat"
+                    name="address"
+                    value={formData.address || ""}
+                    onChange={handleChange}
+                    placeholder="Masukkan alamat lengkap pasien"
+                    rows={3}
+                    required
+                  />
+                </div>
               </div>
             </div>
+            {/* DATA KUNJUNGAN */}
+            <div className="border-t border-gray-100 pt-6">
+              <div className="mb-4">
+                <h3 className="text-sm font-semibold text-gray-800">
+                  Data Kunjungan
+                </h3>
+                <p className="mt-1 text-xs text-gray-400">
+                  Masukkan informasi kunjungan pasien.
+                </p>
+              </div>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <Select
+                  label="Poli"
+                  name="poliId"
+                  value={formData.poliId || ""}
+                  onChange={handleChange}
+                  required
+                  options={polies.map((poli) => ({
+                    value: poli.id,
+                    label: poli.name,
+                  }))}
+                />
+                <Select
+                  label="Dokter"
+                  name="doctorId"
+                  value={formData.doctorId || ""}
+                  onChange={handleChange}
+                  required
+                  options={doctors.map((doctor) => ({
+                    value: doctor.id,
+                    label: doctor.name,
+                  }))}
+                />
+              </div>
+            </div>
+
+            {/* KETERANGAN */}
             <div className="border-t border-gray-100 pt-6">
               <Textarea
-                label="Alamat"
-                name="address"
-                placeholder="Masukkan alamat lengkap pasien"
-                rows={3}
+                label="Keterangan"
+                name="description"
+                value={formData.description || ""}
+                onChange={handleChange}
+                placeholder="Masukkan keluhan atau keterangan pasien"
+                rows={4}
                 required
               />
             </div>
           </div>
-          <div className="flex justify-end gap-3 border-t border-gray-100 bg-white px-6 py-4">
+          {/* FOOTER */}
+          <div className="sticky bottom-0 flex justify-end gap-3 border-t border-gray-100 bg-white px-6 py-4">
             <button
               type="button"
-              onClick={() => setShowModal(false)}
+              onClick={closeModal}
               className="rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-gray-50"
             >
               Batal
             </button>
             <button
               type="submit"
-              className="rounded-lg bg-green-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-green-700"
+              className="rounded-lg bg-green-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
             >
-              Simpan Pasien
+              Registrasi Pasien
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* MODAL VISIT PASIEN*/}
+      <Modal
+        show={activeModal === "visit"}
+        onClose={closeModal}
+        title="Tambahkan Kunjungan Pasien"
+        description="Masukkan data kunjungan untuk membuat data rekam medis baru."
+        size="4xl"
+      >
+        <form onSubmit={handleSubmit}>
+          <div className="space-y-6 px-6">
+            {/* DATA KUNJUNGAN */}
+            <div className="border-t border-gray-100 pt-6">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 mb-4">
+                <input value={selectedPatient?.id} name="patientId" hidden />
+                <Input
+                  label="Nama Lengkap"
+                  name="name"
+                  placeholder={selectedPatient?.name || ""}
+                  disabled={true}
+                  readOnly
+                />
+
+                <Input
+                  label="No. Rekam Medis"
+                  name="recordNumber"
+                  placeholder={selectedPatient?.recordNumber || ""}
+                  disabled={true}
+                  readOnly
+                />
+              </div>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <Select
+                  label="Poli"
+                  name="poliId"
+                  value={formData.poliId || ""}
+                  onChange={handleChange}
+                  required
+                  options={polies.map((poli) => ({
+                    value: poli.id,
+                    label: poli.name,
+                  }))}
+                />
+                <Select
+                  label="Dokter"
+                  name="doctorId"
+                  value={formData.doctorId || ""}
+                  onChange={handleChange}
+                  required
+                  options={doctors.map((doctor) => ({
+                    value: doctor.id,
+                    label: doctor.name,
+                  }))}
+                />
+              </div>
+            </div>
+            {/* KETERANGAN */}
+            <div className="border-t border-gray-100 pt-6">
+              <Textarea
+                label="Keterangan"
+                name="description"
+                value={formData.description || ""}
+                onChange={handleChange}
+                placeholder="Masukkan keluhan atau keterangan pasien"
+                rows={4}
+                required
+              />
+            </div>
+          </div>
+          {/* FOOTER */}
+          <div className="sticky bottom-0 flex justify-end gap-3 border-t border-gray-100 bg-white px-6 py-4">
+            <button
+              type="button"
+              onClick={closeModal}
+              className="rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-gray-50"
+            >
+              Batal
+            </button>
+            <button
+              type="submit"
+              className="rounded-lg bg-green-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+            >
+              Simpan
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* MODAL EDIT PASIEN */}
+      <Modal
+        show={activeModal === "edit"}
+        onClose={closeModal}
+        title="Edit Data Pasien"
+        description="Masukkan data pasien untuk mengubah data"
+        size="4xl"
+      >
+        <form onSubmit={handleSubmit}>
+          <div className="space-y-6 px-6 py-5">
+            {/* DATA PASIEN */}
+            <div>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <Input
+                  label="NIK"
+                  name="nik"
+                  value={formData.nik}
+                  onChange={handleChange}
+                  placeholder="Masukkan NIK"
+                  required
+                />
+                <Input
+                  label="Nama Lengkap"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="Masukkan nama lengkap"
+                  required
+                />
+                <Input
+                  label="Umur"
+                  name="age"
+                  type="number"
+                  min="0"
+                  value={formData.age}
+                  onChange={handleChange}
+                  placeholder="Masukkan umur"
+                  required
+                />
+                <Select
+                  label="Jenis Kelamin"
+                  name="gender"
+                  value={formData.gender}
+                  onChange={handleChange}
+                  required
+                  options={[
+                    { value: "", label: "Pilih jenis kelamin" },
+                    { value: "L", label: "Laki-laki" },
+                    { value: "P", label: "Perempuan" },
+                  ]}
+                />
+                <Input
+                  label="Tanggal Lahir"
+                  name="birthdate"
+                  type="date"
+                  value={formData.birthdate}
+                  onChange={handleChange}
+                  required
+                />
+                <Input
+                  label="No. Telepon"
+                  name="phone"
+                  type="tel"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  placeholder="Masukkan nomor telepon"
+                  required
+                />
+                <div className="md:col-span-2">
+                  <Textarea
+                    label="Alamat"
+                    name="address"
+                    value={formData.address}
+                    onChange={handleChange}
+                    placeholder="Masukkan alamat lengkap pasien"
+                    rows={3}
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* FOOTER */}
+          <div className="sticky bottom-0 flex justify-end gap-3 border-t border-gray-100 bg-white px-6 py-4">
+            <button
+              type="button"
+              onClick={closeModal}
+              className="rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-gray-50"
+            >
+              Batal
+            </button>
+            <button
+              type="submit"
+              className="rounded-lg bg-green-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+            >
+              Simpan
             </button>
           </div>
         </form>

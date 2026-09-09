@@ -4,10 +4,10 @@ import { getCurrentUser } from "../lib/auth.js";
 
 // POST /visits
 export const createVisit = async (req, res) => {
-
   const visitSchema = z.object({
     patientId: z.number().int().positive(),
     doctorId: z.number().int().positive(),
+    poliId: z.number().int().positive(),
     description: z.string().min(2).max(1000),
   });
 
@@ -21,11 +21,12 @@ export const createVisit = async (req, res) => {
       });
     }
 
-    const { patientId, doctorId, description } = req.body;
+    const { patientId, doctorId, poliId, description } = req.body;
 
     const parsedData = visitSchema.safeParse({
       patientId,
       doctorId,
+      poliId,
       description,
     });
 
@@ -37,24 +38,27 @@ export const createVisit = async (req, res) => {
       });
     }
 
-    const currentUser = getCurrentUser(req);
+    const currentUser = await getCurrentUser(req);
 
     const receptionistId = currentUser.userId;
 
+    const visitDate = new Date();
+
     const result = await prisma.$transaction(async (tx) => {
-      const visit = await tx.visits.create({
+      const visit = await tx.visit.create({
         data: {
           patientId,
           doctorId,
+          poliId,
           recepsionistId: Number(receptionistId),
-          visitDate: new Date(),
+          visitDate: visitDate,
           description,
           status: "MENUNGGU",
         },
       });
 
       const queueDate = new Date();
-      
+
       queueDate.setHours(0, 0, 0, 0);
 
       const lastQueue = await tx.queue.findFirst({
@@ -80,7 +84,7 @@ export const createVisit = async (req, res) => {
         data: {
           visitId: visit.id,
           queueNumber,
-          queueDate,
+          queueDate: visitDate,
           status: "MENUNGGU",
         },
       });

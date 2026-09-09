@@ -5,7 +5,6 @@ import Header from "../../components/Header";
 const RegistrationLayout = () => {
 
   const PENDAFTARAN_MENUS = [
-    { link: "/dashboard", label: "Dashboard" },
     { link: "/registration", label: "Registrasi" },
     { link: "/queue", label: "Antrean" },
   ];

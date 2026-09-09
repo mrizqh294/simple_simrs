@@ -6,7 +6,6 @@ import "./index.css";
 import RegistrationLayout from "./assets/pages/pendaftaran/RegistrationLayout";
 
 import Login from "./assets/pages/LoginPage";
-import Dashboard from "./assets/pages/pendaftaran/DashboardPage";
 import Registration from "./assets/pages/pendaftaran/RegistrationPage";
 import Queue from "./assets/pages/pendaftaran/QueuePage";
 
@@ -18,10 +17,6 @@ const router = createBrowserRouter([
   {
     element: <RegistrationLayout />,
     children: [
-      {
-        path: "/dashboard",
-        element: <Dashboard />,
-      },
       {
         path: "/registration",
         element: <Registration />,

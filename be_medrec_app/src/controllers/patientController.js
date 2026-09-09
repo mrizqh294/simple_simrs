@@ -16,8 +16,10 @@ export const getPatients = async (req, res) => {
     const patients = await prisma.patient.findMany();
     return res.status(200).json({
       success: true,
-      patients,
+      message : "Data pasien berhasil dimuat",
+      data : patients,
     });
+
   } catch (error) {
     console.error(error);
     return res.status(500).json({

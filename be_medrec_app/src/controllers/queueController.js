@@ -126,9 +126,42 @@ export const getQueues = async (req, res) => {
     }
 
     const queues = await prisma.queue.findMany({
-      include: {
-        visit: true,
+      select: {
+        id: true,
+        queueNumber: true,
+        queueDate: true,
+        status: true,
+
+        visit: {
+          select: {
+            patient: {
+              select: {
+                id: true,
+                name: true,
+                recordNumber: true,
+              },
+            },
+
+            poli: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+
+            doctor: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+
+            status: true,
+            visitDate: true,
+          },
+        },
       },
+
       orderBy: [
         {
           queueDate: "desc",
@@ -158,7 +191,7 @@ export const callQueue = async (req, res) => {
   try {
     const currentUserRole = req.current_user_role;
 
-    if (currentUserRole !== "ADMIN" && currentUserRole !== "DOKTER") {
+    if (currentUserRole !== "ADMIN" && currentUserRole !== "PENDAFTARAN") {
       return res.status(401).json({
         success: false,
         message: "Anda tidak memiliki izin untuk melakukan tindakan ini",
@@ -213,7 +246,7 @@ export const callQueue = async (req, res) => {
 // PATCH /queues/:id/status
 export const updateQueueStatus = async (req, res) => {
   const queueSchema = z.object({
-    status: z.enum(["MENUNGGU", "DIPANGGIL", "SELESAI", "BATAL"]),
+    status: z.enum(["MENUNGGU", "DIPANGGIL", "DILEWATI", "SELESAI", "BATAL"]),
   });
 
   try {

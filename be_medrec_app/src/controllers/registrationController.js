@@ -1,5 +1,6 @@
 import * as z from "zod";
 import { prisma } from "./../config/database.js";
+import { getCurrentUser } from "../lib/auth.js";
 
 // POST /registration
 
@@ -14,8 +15,6 @@ export const registerPatient = async (req, res) => {
     address: z.string().min(1),
     doctorId: z.number().int(),
     poliId: z.number().int(),
-    recepsionistId: z.number().int(),
-    visitDate: z.coerce.date(),
     description: z.string().min(1),
   });
 
@@ -39,8 +38,6 @@ export const registerPatient = async (req, res) => {
       address,
       doctorId,
       poliId,
-      recepsionistId,
-      visitDate,
       description,
     } = req.body;
 
@@ -54,8 +51,6 @@ export const registerPatient = async (req, res) => {
       address,
       doctorId,
       poliId,
-      recepsionistId,
-      visitDate,
       description,
     });
 
@@ -131,18 +126,29 @@ export const registerPatient = async (req, res) => {
       });
     }
 
+    const currentUser = await getCurrentUser(req);
+
+    if (!currentUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User tidak ditemukan",
+      });
+    }
+
     const recepsionist = await prisma.user.findUnique({
       where: {
-        id: recepsionistId,
+        id: currentUser.userId,
       },
     });
 
-    if (!recepsionist || recepsionist.role !== "PENDAFTARAN") {
+    if (!recepsionist) {
       return res.status(404).json({
         success: false,
         message: "Petugas pendaftaran tidak ditemukan",
       });
     }
+
+    const visitDate = new Date();
 
     const registration = await prisma.$transaction(async (tx) => {
       const patient = await tx.patient.create({
@@ -163,8 +169,8 @@ export const registerPatient = async (req, res) => {
           patientId: patient.id,
           doctorId,
           poliId,
-          recepsionistId,
-          visitDate,
+          recepsionistId: currentUser.userId,
+          visitDate: visitDate,
           description,
           status: "MENUNGGU",
         },
@@ -211,7 +217,6 @@ export const registerPatient = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-
     return res.status(500).json({
       success: false,
       message: "Terjadi kesalahan server",
