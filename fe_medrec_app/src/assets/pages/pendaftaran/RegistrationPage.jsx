@@ -96,36 +96,6 @@ const Registration = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  //   const handleSubmit = async (event) => {
-  //     event.preventDefault();
-
-  //     try {
-  //       const data = {
-  //         ...formData,
-  //         age: Number(formData.age),
-  //         poliId: Number(formData.poliId),
-  //         doctorId: Number(formData.doctorId),
-  //       };
-
-  //       const result = await registerPatient(data);
-
-  //       if (!result.success) {
-  //         alert(result.message || "Registrasi pasien gagal");
-  //         return;
-  //       }
-
-  //       alert(result.message || "Registrasi berhasil!");
-
-  //       await fetchPatients();
-
-  //       closeModal();
-  //     } catch (error) {
-  //       console.error("Gagal mendaftarkan pasien:", error.message);
-
-  //       alert(error.message || "Terjadi kesalahan saat registrasi pasien");
-  //     }
-  //   };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -181,18 +151,8 @@ const Registration = () => {
       setFormData({});
       closeModal();
     } catch (error) {
-      console.error("Terjadi kesalahan:", error.message);
-
       alert(error.message || "Terjadi kesalahan pada server");
     }
-  };
-
-  const handleEdit = (patient) => {
-    console.log("Edit pasien:", patient);
-  };
-
-  const handleAddVisit = (patient) => {
-    console.log("Tambah kunjungan:", patient);
   };
 
   return (
@@ -666,4 +626,5 @@ const Registration = () => {
     </>
   );
 };
+
 export default Registration;
