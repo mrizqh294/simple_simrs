@@ -37,7 +37,7 @@ export default function Modal({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+            className="rounded-lg cursor-pointer p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
           >
             <svg
               className="h-5 w-5"

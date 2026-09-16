@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, act } from "react";
 import Modal from "../../components/Modal";
 import Textarea from "../../components/Textarea";
 import Input from "../../components/Input";
@@ -89,6 +89,11 @@ const Registration = () => {
   const closeModal = () => {
     setActiveModal(null);
     setSelectedPatient(null);
+
+    if (activeModal === "edit") {
+      setFormData({});
+    }
+
   };
 
   const handleChange = (event) => {
@@ -194,7 +199,7 @@ const Registration = () => {
               <button
                 type="button"
                 onClick={openRegisterModal}
-                className="rounded-lg bg-green-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                className="rounded-lg cursor-pointer bg-green-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
               >
                 Registrasi Pasien Baru
               </button>
@@ -248,7 +253,7 @@ const Registration = () => {
                         <button
                           type="button"
                           onClick={() => openEditModal(patient)}
-                          className="rounded-lg border border-gray-200 px-3 py-2 text-xs font-medium text-gray-600 transition hover:bg-gray-50 hover:text-gray-800"
+                          className="rounded-lg cursor-pointer border border-gray-200 px-3 py-2 text-xs font-medium text-gray-600 transition hover:bg-gray-50 hover:text-gray-800"
                         >
                           Edit
                         </button>
@@ -256,7 +261,7 @@ const Registration = () => {
                         <button
                           type="button"
                           onClick={() => openVisitModal(patient)}
-                          className="rounded-lg bg-green-50 px-3 py-2 text-xs font-medium text-green-700 transition hover:bg-green-100"
+                          className="rounded-lg cursor-pointer bg-green-50 px-3 py-2 text-xs font-medium text-green-700 transition hover:bg-green-100"
                         >
                           Tambah Kunjungan
                         </button>
@@ -330,10 +335,10 @@ const Registration = () => {
                   label="Jenis Kelamin"
                   name="gender"
                   value={formData.gender || ""}
+                  placeholder="Pilih jenis Kelamin"
                   onChange={handleChange}
                   required
                   options={[
-                    { value: "", label: "Pilih jenis kelamin" },
                     { value: "L", label: "Laki-laki" },
                     { value: "P", label: "Perempuan" },
                   ]}
@@ -384,6 +389,7 @@ const Registration = () => {
                   name="poliId"
                   value={formData.poliId || ""}
                   onChange={handleChange}
+                  placeholder="Pilih poli"
                   required
                   options={polies.map((poli) => ({
                     value: poli.id,
@@ -395,6 +401,7 @@ const Registration = () => {
                   name="doctorId"
                   value={formData.doctorId || ""}
                   onChange={handleChange}
+                  placeholder="Pilih dokter"
                   required
                   options={doctors.map((doctor) => ({
                     value: doctor.id,
@@ -422,13 +429,13 @@ const Registration = () => {
             <button
               type="button"
               onClick={closeModal}
-              className="rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-gray-50"
+              className="rounded-lg cursor-pointer border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-gray-50"
             >
               Batal
             </button>
             <button
               type="submit"
-              className="rounded-lg bg-green-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+              className="rounded-lg cursor-pointer bg-green-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
             >
               Registrasi Pasien
             </button>
@@ -509,13 +516,13 @@ const Registration = () => {
             <button
               type="button"
               onClick={closeModal}
-              className="rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-gray-50"
+              className="rounded-lg cursor-pointer border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-gray-50"
             >
               Batal
             </button>
             <button
               type="submit"
-              className="rounded-lg bg-green-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+              className="rounded-lg cursor-pointer bg-green-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
             >
               Simpan
             </button>
@@ -610,13 +617,13 @@ const Registration = () => {
             <button
               type="button"
               onClick={closeModal}
-              className="rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-gray-50"
+              className="rounded-lg cursor-pointer border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-gray-50"
             >
               Batal
             </button>
             <button
               type="submit"
-              className="rounded-lg bg-green-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+              className="rounded-lg cursor-pointer bg-green-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
             >
               Simpan
             </button>
