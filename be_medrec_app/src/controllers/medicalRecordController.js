@@ -1,12 +1,16 @@
 import * as medicalRecordServices from "./../services/medicalRecordServices.js";
+import { getCurrentUser } from "./../lib/auth.js";
 
 // POST /medical-record
 
 export const createMedicalRecord = async (req, res) => {
   try {
-    const medicalRecord = await medicalRecordServices.createMedicalRecord(
-      req.body,
-    );
+    const currentUser = await getCurrentUser(req);
+
+    const medicalRecord = await medicalRecordServices.createMedicalRecord({
+      ...req.body,
+      doctorId : Number(currentUser.userId),
+    });
 
     return res.status(201).json({
       success: true,

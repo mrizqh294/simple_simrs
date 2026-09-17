@@ -22,7 +22,7 @@ export const getMedicalRecords = async (patientId) => {
       patientId: Number(patientId),
     };
   }
-
+  
   return prisma.medicalRecord.findMany({
     where,
     include: {

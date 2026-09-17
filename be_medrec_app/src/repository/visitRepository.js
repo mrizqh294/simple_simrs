@@ -69,16 +69,6 @@ export const createVisitWithQueue = async ({
   });
 };
 
-export const findLastQueueByDate = async (queueDate) => {
-  return prisma.queue.findFirst({
-    where: {
-      queueDate,
-    },
-    orderBy: {
-      queueNumber: "desc",
-    },
-  });
-};
 
 export const findVisitById = async (id) => {
   return prisma.visit.findUnique({

@@ -1,13 +1,5 @@
 import { prisma } from "./../config/database.js";
 
-export const findVisitById = async (visitId) => {
-  return prisma.visit.findUnique({
-    where: {
-      id: Number(visitId),
-    },
-  });
-};
-
 export const findQueueByVisitId = async (visitId) => {
   return prisma.queue.findUnique({
     where: {

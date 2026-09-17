@@ -17,7 +17,7 @@ export const registerPatient = async (req, res) => {
     const registration =
       await registrationServices.registerPatient({
         ...req.body,
-        receptionistId: Number(currentUser.userId),
+        recepsionistId: Number(currentUser.userId),
       });
 
     return res.status(201).json({

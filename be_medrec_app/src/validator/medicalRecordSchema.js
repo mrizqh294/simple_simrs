@@ -1,7 +1,6 @@
 import * as z from "zod";
 
 const medicalRecordSchema = z.object({
-  doctorId: z.number().int(),
   visitId: z.number().int(),
   bloodTension: z.string().min(1),
   temperature: z.string().min(1),

@@ -10,11 +10,18 @@ import {
 
 import {
   createVisit,
+  getVisits,
   updateVisit,
   updateVisitStatus,
 } from "../controllers/visitController.js";
 
 const router = express.Router();
+
+router.get(
+  "/visits",
+  auth,
+  getVisits
+)
 
 router.post(
   "/visits",
