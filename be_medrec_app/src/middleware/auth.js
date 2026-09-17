@@ -1,10 +1,10 @@
 import { getCurrentUser } from "../lib/auth.js";
 
-export const auth = async (req, res, next) => {
+const auth = async (req, res, next) => {
   const currentUser = await getCurrentUser(req);
 
   if (!currentUser) {
-    return res.status(403).json({
+    return res.status(401).json({
       success: false,
       message: "Anda belum terautentikasi",
     });
@@ -16,3 +16,5 @@ export const auth = async (req, res, next) => {
 
   next();
 };
+
+export default auth;

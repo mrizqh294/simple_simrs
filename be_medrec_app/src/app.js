@@ -12,9 +12,9 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
-const port = 5000;
 
 const app = express();
+
 app.use(express.json());
 app.use(cookieParser());
 
@@ -37,6 +37,4 @@ app.use(
   poliRoutes
 );
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-});
+export default app;
