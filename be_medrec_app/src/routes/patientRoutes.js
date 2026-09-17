@@ -1,13 +1,51 @@
-import express from 'express'
-import { getPatients, createPatient, getPatientById, deletePatient, updatePatient} from '../controllers/patientController.js'
-import auth from '../middleware/auth.js';
+import express from "express";
+import auth from "../middleware/auth.js";
+import roleCheck from "../middleware/role.js";
+import validate from "../middleware/validator.js";
+import patientSchema from "../validator/patientSchema.js";
 
-const router = express.Router()
+import {
+  getPatients,
+  createPatient,
+  getPatientById,
+  deletePatient,
+  updatePatient,
+} from "../controllers/patientController.js";
 
-router.get('/patients', auth, getPatients);
-router.post('/patients', auth, createPatient);
-router.get('/patients/:id', auth, getPatientById);
-router.delete('/patients/:id', auth, deletePatient);
-router.patch('/patients/:id', auth, updatePatient);
+
+const router = express.Router();
+
+
+router.get("/patients", auth, roleCheck("PENDAFTARAN", "ADMIN"), getPatients);
+
+router.get(
+  "/patients/:id",
+  auth,
+  roleCheck("PENDAFTARAN", "ADMIN"),
+  getPatientById,
+);
+
+router.post(
+  "/patients",
+  auth,
+  roleCheck("PENDAFTARAN", "ADMIN"),
+  validate(patientSchema),
+  createPatient,
+);
+
+router.delete(
+  "/patients/:id",
+  auth,
+  roleCheck("PENDAFTARAN", "ADMIN"),
+  deletePatient,
+);
+
+router.patch(
+  "/patients/:id",
+  auth,
+  roleCheck("PENDAFTARAN", "ADMIN"),
+  validate(patientSchema),
+  updatePatient,
+);
 
 export default router;
