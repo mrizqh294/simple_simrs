@@ -35,7 +35,7 @@ export const getUsers = async (role) => {
   return users;
 };
 
-export const getUserById = async (id) => {
+export const findUserById = async (id) => {
   const user = await prisma.user.findUnique({
     where: {
       id: Number(id),

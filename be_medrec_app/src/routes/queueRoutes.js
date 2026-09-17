@@ -1,12 +1,39 @@
-import express from 'express'
-import { createQueue, getQueues, callQueue, updateQueueStatus } from '../controllers/queueController.js'
-import auth from '../middleware/auth.js';
+import express from "express";
+import auth from "../middleware/auth.js";
+import roleCheck from "../middleware/role.js";
+import validate from "../middleware/validator.js";
 
-const router = express.Router()
+import {
+  createQueue,
+  getQueues,
+  callQueue,
+  updateQueueStatus,
+} from "../controllers/queueController.js";
 
-router.post('/queues', auth, createQueue);
-router.get('/queues', auth, getQueues);
-router.patch('/queues/:id/call', auth, callQueue);
-router.patch('/queues/:id/status', auth, updateQueueStatus);
+import {
+  createQueueSchema,
+  updateQueueStatusSchema,
+} from "../validator/queueSchema.js";
+
+const router = express.Router();
+
+router.get("/queues", auth, roleCheck("PENDAFTARAN", "ADMIN"), getQueues);
+router.patch("/queues/:id/call", auth, roleCheck("PENDAFTARAN"), callQueue);
+
+router.post(
+  "/queues",
+  auth,
+  roleCheck("PENDAFTARAN"),
+  validate(createQueueSchema),
+  createQueue,
+);
+
+router.patch(
+  "/queues/:id/status",
+  auth,
+  roleCheck("PENDAFTARAN"),
+  validate(updateQueueStatusSchema),
+  updateQueueStatus,
+);
 
 export default router;

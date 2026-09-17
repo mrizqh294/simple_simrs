@@ -1,11 +1,18 @@
-import express from 'express'
-import { registerPatient, getVisits, updateVisit } from '../controllers/registrationController.js'
-import auth from '../middleware/auth.js';
+import express from "express";
+import { registerPatient } from "../controllers/registrationController.js";
+import auth from "../middleware/auth.js";
+import roleCheck from "../middleware/role.js";
+import validate from "../middleware/validator.js";
+import registrationSchema from "../validator/registrationSchema.js";
 
-const router = express.Router()
+const router = express.Router();
 
-router.post('/registration', auth, registerPatient);
-router.get('/registration', auth, getVisits);
-router.patch('/registration/:id', auth, updateVisit);
+router.post(
+  "/registration",
+  auth,
+  roleCheck("PENDAFTARAN"),
+  validate(registrationSchema),
+  registerPatient,
+);
 
 export default router;

@@ -28,6 +28,14 @@ export const findLastPatient = async () => {
   });
 };
 
+export const findPatientByRecordNumber = async (recordNumber) => {
+  return prisma.patient.findUnique({
+    where: {
+      recordNumber,
+    },
+  });
+};
+
 export const createPatient = async (data) => {
   return prisma.patient.create({
     data,

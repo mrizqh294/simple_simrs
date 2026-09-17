@@ -1,10 +1,43 @@
-import express from 'express'
-import { createVisit, updateVisitStatus } from '../controllers/visitController.js'
-import auth from '../middleware/auth.js';
+import express from "express";
+import auth from "../middleware/auth.js";
+import roleCheck from "../middleware/role.js";
+import validate from "../middleware/validator.js";
 
-const router = express.Router()
+import {
+  visitSchema,
+  updateVisitStatusSchema
+} from "../validator/visitSchema.js";
 
-router.post('/visits', auth, createVisit);
-router.patch('/visits/:id/status', auth, updateVisitStatus);
+import {
+  createVisit,
+  updateVisit,
+  updateVisitStatus,
+} from "../controllers/visitController.js";
+
+const router = express.Router();
+
+router.post(
+  "/visits",
+  auth,
+  roleCheck("PENDAFTARAN"),
+  validate(visitSchema),
+  createVisit,
+);
+
+router.patch(
+  "/visits/:id/status",
+  auth,
+  roleCheck("PENDAFTARAN", "DOKTER"),
+  validate(updateVisitStatusSchema),
+  updateVisitStatus,
+);
+
+router.patch(
+  "/visits/:id",
+  auth,
+  roleCheck("PENDAFTARAN"),
+  validate(visitSchema),
+  updateVisit,
+);
 
 export default router;
