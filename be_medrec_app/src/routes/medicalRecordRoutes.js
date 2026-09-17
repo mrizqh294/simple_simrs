@@ -1,6 +1,6 @@
 import express from 'express'
 import { createMedicalRecord, getMedicalRecords } from '../controllers/medicalRecordController.js'
-import { auth } from '../middleware/auth.js';
+import auth from '../middleware/auth.js';
 
 const router = express.Router()
 

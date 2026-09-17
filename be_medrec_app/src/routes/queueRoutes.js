@@ -1,6 +1,6 @@
 import express from 'express'
 import { createQueue, getQueues, callQueue, updateQueueStatus } from '../controllers/queueController.js'
-import { auth } from '../middleware/auth.js';
+import auth from '../middleware/auth.js';
 
 const router = express.Router()
 

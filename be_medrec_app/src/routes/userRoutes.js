@@ -1,7 +1,7 @@
 import express from "express";
-import { validate } from "../middleware/validator.js";
-import { auth } from "../middleware/auth.js";
-import { roleCheck } from "../middleware/role.js";
+import validate from "../middleware/validator.js";
+import auth from "../middleware/auth.js";
+import roleCheck from "../middleware/role.js";
 import userSchema from "../validator/UserSchema.js";
 
 import {
