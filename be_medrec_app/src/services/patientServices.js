@@ -1,5 +1,4 @@
 import * as patientRepository from "./../repository/patientRepository.js";
-import { createRecordNumber } from "../lib/recordNumber.js";
 
 export const getPatients = async ({ page, limit, search }) => {
   const skip = (page - 1) * limit;

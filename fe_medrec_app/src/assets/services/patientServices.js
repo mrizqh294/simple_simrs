@@ -1,7 +1,13 @@
 import { fetchApi } from "./api";
 
-export const getPatients = async () => {
-  return await fetchApi("/patients", {
+export const getPatients = async ({ page = 1, limit = 10, search = "" }) => {
+  const params = new URLSearchParams({
+    page,
+    limit,
+    search,
+  });
+  
+  return await fetchApi(`/patients?${params.toString()}`, {
     method: "GET",
   });
 };

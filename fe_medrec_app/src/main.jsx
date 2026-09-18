@@ -2,10 +2,10 @@ import "./index.css";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import RegistrationLayout from "./assets/pages/pendaftaran/RegistrationLayout";
+import RegistrationLayout from "./assets/pages/registration/RegistrationLayout";
 import Login from "./assets/pages/LoginPage";
-import Registration from "./assets/pages/pendaftaran/RegistrationPage";
-import Queue from "./assets/pages/pendaftaran/QueuePage";
+import Registration from "./assets/pages/registration/RegistrationPage";
+import Queue from "./assets/pages/registration/QueuePage";
 import ProtectedRoute from "./ProtectedRoute";
 
 const router = createBrowserRouter([
