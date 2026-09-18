@@ -7,13 +7,6 @@ export const registerPatient = async (req, res) => {
   try {
     const currentUser = await getCurrentUser(req);
 
-    if (!currentUser) {
-      return res.status(401).json({
-        success: false,
-        message: "User tidak ditemukan",
-      });
-    }
-
     const registration =
       await registrationServices.registerPatient({
         ...req.body,

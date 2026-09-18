@@ -1,9 +1,10 @@
 import * as patientServices from "./../services/patientServices.js";
+import * as patientRepository from "./../repository/patientRepository.js";
 
 // GET /patients
 export const getPatients = async (req, res) => {
   try {
-    const patients = await patientServices.getPatients();
+    const patients = await patientRepository.getPatients();
 
     return res.status(200).json({
       success: true,

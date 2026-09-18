@@ -1,6 +1,7 @@
 import * as queueRepository from "./../repository/queueRepository.js";
 import * as visitRepository from "./../repository/visitRepository.js";
 
+// create queue number
 export const createQueueNumber = async (date) => {
   const lastQueue = await queueRepository.findLastQueueByDate(date);
 
@@ -15,7 +16,7 @@ export const createQueueNumber = async (date) => {
   }
 
   return queueNumber;
-}
+};
 
 // create queue
 export const createQueue = async (data) => {
@@ -36,7 +37,7 @@ export const createQueue = async (data) => {
     error.statusCode = 409;
     throw error;
   }
-  
+
   const queueNumber = await createQueueNumber(date);
 
   return queueRepository.createQueue({

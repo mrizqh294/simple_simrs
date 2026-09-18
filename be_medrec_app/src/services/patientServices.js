@@ -32,9 +32,6 @@ export const createPatient = async (data) => {
   });
 };
 
-export const getPatients = async () => {
-  return patientRepository.getPatients();
-};
 
 export const getPatientById = async (id) => {
   const patient = await patientRepository.findPatientById(id);

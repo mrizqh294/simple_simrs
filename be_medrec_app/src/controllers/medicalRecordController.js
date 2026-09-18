@@ -1,4 +1,5 @@
 import * as medicalRecordServices from "./../services/medicalRecordServices.js";
+import * as medicalRecordRepository from "./../repository/medicalRecordRepository.js";
 import { getCurrentUser } from "./../lib/auth.js";
 
 // POST /medical-record
@@ -33,7 +34,7 @@ export const getMedicalRecords = async (req, res) => {
   try {
     const { patientId } = req.query;
 
-    const medicalRecords = await medicalRecordServices.getMedicalRecords(patientId);
+    const medicalRecords = await medicalRecordRepository.getMedicalRecords(patientId);
 
     return res.status(200).json({
       success: true,

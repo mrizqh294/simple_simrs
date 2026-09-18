@@ -20,7 +20,3 @@ export const createMedicalRecord = async (data) => {
 
   return medicalRecord;
 };
-
-export const getMedicalRecords = async (patientId) => {
-  return medicalRecordRepository.getMedicalRecords(patientId);
-};
