@@ -10,7 +10,7 @@ export const registerPatient = async (req, res) => {
     const registration =
       await registrationServices.registerPatient({
         ...req.body,
-        recepsionistId: Number(currentUser.userId),
+        receptionistId: Number(currentUser.userId),
       });
 
     return res.status(201).json({

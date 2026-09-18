@@ -99,7 +99,7 @@ model Visit {
   patientId     Int
   doctorId      Int
   poliId        Int
-  recepsionistId   Int
+  receptionistId   Int
   visitDate     DateTime
   description   String   @db.Text
   status        VisitStatus   @default(MENUNGGU)
@@ -109,7 +109,7 @@ model Visit {
   patient       Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
   poli          Poli     @relation(fields: [poliId], references: [id])
   doctor        User     @relation("DoctorVisits", fields: [doctorId], references: [id])
-  recepsionist  User     @relation("ReceptionistVisits", fields: [recepsionistId], references: [id])
+  receptionist  User     @relation("ReceptionistVisits", fields: [receptionistId], references: [id])
 
   medicalRecords MedicalRecord?
   queue          Queue?

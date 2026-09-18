@@ -1,4 +1,6 @@
 import { prisma } from "./../config/database.js";
+import * as queueRepository from"./../repository/queueRepository.js"
+import { createQueueNumber } from "../lib/queueNumber.js";
 
 export const getVisits = async () => {
   return prisma.visit.findMany({
@@ -34,30 +36,33 @@ export const createVisitWithQueue = async ({
   receptionistId,
   visitDate,
   description,
-  queueNumber,
 }) => {
   return prisma.$transaction(async (tx) => {
+
+    // membuat queue number
+    const queueDate = new Date(visitDate);
+    queueDate.setHours(0, 0, 0, 0);
+    const lastQueue = await queueRepository.findLastQueueByDate(tx, queueDate);
+    const queueNumber = await createQueueNumber(lastQueue);
+
+    // insert data
     const visit = await tx.visit.create({
       data: {
         patientId,
         doctorId,
         poliId,
-        recepsionistId: receptionistId,
+        receptionistId,
         visitDate,
         description,
         status: "MENUNGGU",
       },
     });
 
-    const queueDate = new Date(visitDate);
-
-    queueDate.setHours(0, 0, 0, 0);
-
     const queue = await tx.queue.create({
       data: {
         visitId: visit.id,
         queueNumber,
-        queueDate: visitDate,
+        queueDate,
         status: "MENUNGGU",
       },
     });

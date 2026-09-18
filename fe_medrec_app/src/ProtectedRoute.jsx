@@ -14,7 +14,7 @@ const ProtectedRoute = () => {
         console.log("CURRENT USER:", result);
 
         if (result?.success) {
-          setUser(result.user);
+          setUser(result.data);
         }
       } catch (error) {
         console.error("Gagal mengecek user:", error);

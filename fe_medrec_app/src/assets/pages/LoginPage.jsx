@@ -41,9 +41,7 @@ const Login = () => {
     } catch (error) {
       console.error("Login gagal:", error);
 
-      setError(
-        error.message || "Terjadi kesalahan saat login",
-      );
+      setError(error.message || "Terjadi kesalahan saat login");
     } finally {
       setLoading(false);
     }

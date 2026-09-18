@@ -1,15 +1,54 @@
 import * as patientRepository from "./../repository/patientRepository.js";
+import { createRecordNumber } from "../lib/recordNumber.js";
 
-export const createRecordNumber = async () => {
-  const lastPatient = await patientRepository.findLastPatient();
+export const getPatients = async ({ page, limit, search }) => {
+  const skip = (page - 1) * limit;
 
-  const nextNumber = lastPatient ? lastPatient.id + 1 : 1;
+  const where = search
+    ? {
+        OR: [
+          {
+            name: {
+              contains: search,
+            },
+          },
+          {
+            recordNumber: {
+              contains: search,
+            },
+          },
+          {
+            nik: {
+              contains: search,
+            },
+          },
+        ],
+      }
+    : {};
 
-  const recordNumber = `RM-${new Date().getFullYear()}-${String(
-    nextNumber,
-  ).padStart(6, "0")}`;
+  const [patients, total] = await Promise.all([
+    patientRepository.getPatients({
+      where,
+      skip,
+      take: limit,
+    }),
 
-  return recordNumber;
+    patientRepository.countPatients(where),
+  ]);
+
+  const totalPages = Math.ceil(total / limit);
+
+  return {
+    data: patients,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPreviousPage: page > 1,
+    },
+  };
 };
 
 export const createPatient = async (data) => {
@@ -23,15 +62,11 @@ export const createPatient = async (data) => {
     throw error;
   }
 
-  const recordNumber = await createRecordNumber();
-
   return patientRepository.createPatient({
     ...data,
     birthdate: new Date(data.birthdate),
-    recordNumber,
   });
 };
-
 
 export const getPatientById = async (id) => {
   const patient = await patientRepository.findPatientById(id);

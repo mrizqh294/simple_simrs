@@ -6,6 +6,7 @@ import patientRoutes from "./routes/patientRoutes.js";
 import registrationRoutes from "./routes/registrationRoutes.js";
 import visitRoutes from "./routes/visitRoutes.js";
 import medicarRecordRoutes from "./routes/medicalRecordRoutes.js";
+import doctorRoutes from "./routes/doctorRoutes.js"
 import queueRoutes from "./routes/queueRoutes.js";
 import poliRoutes from "./routes/poliRoutes.js";
 import express from "express";
@@ -34,7 +35,8 @@ app.use(
   visitRoutes,
   medicarRecordRoutes,
   queueRoutes,
-  poliRoutes
+  poliRoutes,
+  doctorRoutes,
 );
 
 export default app;

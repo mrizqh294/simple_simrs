@@ -47,7 +47,7 @@ export const getUserById = async (req, res) => {
 
     const { id } = req.params;
 
-    const user = await userRepository.getUserById(id);
+    const user = await userRepository.findUserById(id);
 
     return res.status(200).json({
       success: true,

@@ -1,7 +1,21 @@
 import { prisma } from "./../config/database.js";
+import { createRecordNumber } from "../lib/recordNumber.js";
 
-export const getPatients = async () => {
-  return prisma.patient.findMany();
+export const getPatients = async ({ where, skip, take }) => {
+  return await prisma.patient.findMany({
+    where,
+    skip,
+    take,
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+};
+
+export const countPatients = async (where) => {
+  return await prisma.patient.count({
+    where,
+  });
 };
 
 export const findPatientById = async (id) => {
@@ -20,12 +34,16 @@ export const findPatientByNik = async (nik) => {
   });
 };
 
-export const findLastPatient = async () => {
-  return prisma.patient.findFirst({
-    orderBy: {
-      id: "desc",
-    },
-  });
+export const findLastPatient = async (tx) => {
+  const result = await tx.$queryRaw`
+    SELECT *
+    FROM Patient
+    ORDER BY id DESC
+    LIMIT 1
+    FOR UPDATE
+  `;
+
+  return result[0];
 };
 
 export const findPatientByRecordNumber = async (recordNumber) => {
@@ -37,8 +55,19 @@ export const findPatientByRecordNumber = async (recordNumber) => {
 };
 
 export const createPatient = async (data) => {
-  return prisma.patient.create({
-    data,
+  return prisma.$transaction(async (tx) => {
+    const lastPatient = await findLastPatient(tx);
+
+    const recordNumber = await createRecordNumber(lastPatient);
+
+    const patient = await tx.patient.create({
+      data: {
+        ...data,
+        recordNumber,
+      },
+    });
+
+    return patient;
   });
 };
 

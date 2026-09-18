@@ -8,15 +8,17 @@ export const findQueueByVisitId = async (visitId) => {
   });
 };
 
-export const findLastQueueByDate = async (queueDate) => {
-  return prisma.queue.findFirst({
-    where: {
-      queueDate,
-    },
-    orderBy: {
-      queueNumber: "desc",
-    },
-  });
+export const findLastQueueByDate = async (tx, queueDate) => {
+  const result = await tx.$queryRaw`
+    SELECT *
+    FROM Queue
+    WHERE queueDate = DATE(${queueDate})
+    ORDER BY queueNumber DESC
+    LIMIT 1
+    FOR UPDATE
+  `;
+
+  return result[0];
 };
 
 export const createQueue = async (data) => {

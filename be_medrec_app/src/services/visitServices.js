@@ -1,5 +1,4 @@
 import * as visitRepository from "./../repository/visitRepository.js";
-import { createQueueNumber } from "./queueServices.js";
 
 export const getVisits = async () => {
   return visitRepository.getVisits();
@@ -9,12 +8,6 @@ export const getVisits = async () => {
 export const createVisit = async (data) => {
   const visitDate = new Date();
 
-  const queueDate = new Date(visitDate);
-
-  queueDate.setHours(0, 0, 0, 0);
-
-  const queueNumber = await createQueueNumber(queueDate);
-
   return visitRepository.createVisitWithQueue({
     patientId: data.patientId,
     doctorId: data.doctorId,
@@ -22,7 +15,6 @@ export const createVisit = async (data) => {
     receptionistId: data.receptionistId,
     visitDate,
     description: data.description,
-    queueNumber,
   });
 };
 

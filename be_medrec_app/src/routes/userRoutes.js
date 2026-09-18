@@ -14,7 +14,7 @@ import {
 
 const router = express.Router();
 
-router.get("/users", auth, roleCheck("ADMIN"), getUsers);
+router.get("/users", auth, roleCheck("ADMIN", "PENDAFTARAN"), getUsers);
 
 router.get("/users/:id", auth, getUserById);
 

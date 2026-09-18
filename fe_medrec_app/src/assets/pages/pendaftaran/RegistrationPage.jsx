@@ -1,66 +1,28 @@
-import { useState, useEffect, act } from "react";
+import { useState } from "react";
 import Modal from "../../components/Modal";
 import Textarea from "../../components/Textarea";
 import Input from "../../components/Input";
 import Select from "../../components/Select";
 import { Table, Th, Td, EmptyRow } from "../../components/Table";
-import { getPatients } from "../../services/patientServices";
 import { registerPatient } from "../../services/registrationServices";
-import { getPoli } from "../../services/poliServices";
-import { getDoctors } from "../../services/userServices";
 import { createVisit } from "../../services/visitServices";
 import { updatePatient } from "../../services/patientServices";
+import { useRegistration } from "../../hooks/useRegistration";
 
 const Registration = () => {
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
   const [formData, setFormData] = useState({});
-  const [patients, setPatients] = useState([]);
-  const [polies, setPolies] = useState([]);
-  const [doctors, setDoctors] = useState([]);
   const [activeModal, setActiveModal] = useState(null);
   const [selectedPatient, setSelectedPatient] = useState(null);
 
-  const fetchPoli = async () => {
-    try {
-      const result = await getPoli();
-      setPolies(result.data || result);
-    } catch (error) {
-      console.error("Gagal memuat data poli:", error.message);
-    }
-  };
-
-  const fetchDoctors = async () => {
-    try {
-      const result = await getDoctors();
-      setDoctors(result.data || result);
-    } catch (error) {
-      console.error("Gagal memuat data dokter:", error.message);
-    }
-  };
-
-  const fetchPatients = async () => {
-    try {
-      const result = await getPatients();
-      setPatients(result.data || result);
-    } catch (error) {
-      console.error("Gagal memuat data pasien:", error.message);
-    }
-  };
-
-  useEffect(() => {
-    fetchPoli();
-    fetchPatients();
-    fetchDoctors();
-  }, []);
-
-  const filteredPatients = patients.filter((patient) => {
-    const keyword = search.toLowerCase();
-    return (
-      patient.name.toLowerCase().includes(keyword) ||
-      patient.nik.includes(keyword) ||
-      patient.recordNumber.toLowerCase().includes(keyword)
-    );
-  });
+  const { patients, polies, doctors, loading, error, refetch } =
+    useRegistration({
+      page: page,
+      limit: limit,
+      search: search,
+    });
 
   const openRegisterModal = () => {
     setActiveModal("register");
@@ -90,10 +52,7 @@ const Registration = () => {
     setActiveModal(null);
     setSelectedPatient(null);
 
-    if (activeModal === "edit") {
-      setFormData({});
-    }
-
+    setFormData({});
   };
 
   const handleChange = (event) => {
@@ -151,7 +110,7 @@ const Registration = () => {
 
       alert(result.message || "Proses berhasil");
 
-      await fetchPatients();
+      await refetch();
 
       setFormData({});
       closeModal();
@@ -221,8 +180,8 @@ const Registration = () => {
             </thead>
 
             <tbody className="divide-y divide-gray-100">
-              {filteredPatients.length > 0 ? (
-                filteredPatients.map((patient, index) => (
+              {patients.length > 0 ? (
+                patients.map((patient, index) => (
                   <tr key={patient.id} className="transition hover:bg-gray-50">
                     <Td>{index + 1}</Td>
 
@@ -277,7 +236,7 @@ const Registration = () => {
           {/* TABLE FOOTER */}
           <div className="border-t border-gray-100 px-5 py-4">
             <p className="text-xs text-gray-400">
-              Menampilkan {filteredPatients.length} dari {patients.length}
+              Menampilkan {patients.length} dari {patients.length}
               pasien
             </p>
           </div>

@@ -10,6 +10,16 @@ export const findUserByEmail = async (email) => {
   return user;
 };
 
+export const getUsersByRole = async (role) => {
+  const user = await prisma.user.findMany({
+    where: {
+      role,
+    },
+  });
+
+  return user;
+};
+
 export const createUser = async (data) => {
   const user = await prisma.user.create({
     data,

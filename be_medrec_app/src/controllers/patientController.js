@@ -4,19 +4,28 @@ import * as patientRepository from "./../repository/patientRepository.js";
 // GET /patients
 export const getPatients = async (req, res) => {
   try {
-    const patients = await patientRepository.getPatients();
+    const page = Math.max(Number(req.query.page) || 1, 1);
+
+    const limit = Math.min(Math.max(Number(req.query.limit) || 10, 1), 100);
+
+    const search = req.query.search?.trim() || "";
+
+    const result = await patientServices.getPatients({
+      page,
+      limit,
+      search,
+    });
 
     return res.status(200).json({
       success: true,
-      message: "Data pasien berhasil dimuat",
-      data: patients,
+      ...result,
     });
   } catch (error) {
     console.error(error);
 
-    return res.status(error.statusCode || 500).json({
+    return res.status(500).json({
       success: false,
-      message: error.message || "Terjadi kesalahan server",
+      message: "Gagal mengambil data pasien",
     });
   }
 };

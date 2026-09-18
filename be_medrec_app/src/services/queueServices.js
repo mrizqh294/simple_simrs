@@ -1,52 +1,6 @@
 import * as queueRepository from "./../repository/queueRepository.js";
 import * as visitRepository from "./../repository/visitRepository.js";
 
-// create queue number
-export const createQueueNumber = async (date) => {
-  const lastQueue = await queueRepository.findLastQueueByDate(date);
-
-  let queueNumber = "A001";
-
-  if (lastQueue) {
-    const lastNumber = Number(lastQueue.queueNumber.substring(1));
-
-    const nextNumber = lastNumber + 1;
-
-    queueNumber = `A${String(nextNumber).padStart(3, "0")}`;
-  }
-
-  return queueNumber;
-};
-
-// create queue
-export const createQueue = async (data) => {
-  const date = new Date();
-
-  const existingVisit = await visitRepository.findVisitById(data.visitId);
-
-  if (!existingVisit) {
-    const error = new Error("Data kunjungan tidak ditemukan");
-    error.statusCode = 404;
-    throw error;
-  }
-
-  const existingQueue = await queueRepository.findQueueByVisitId(data.visitId);
-
-  if (existingQueue) {
-    const error = new Error("Kunjungan ini sudah memiliki nomor antrean");
-    error.statusCode = 409;
-    throw error;
-  }
-
-  const queueNumber = await createQueueNumber(date);
-
-  return queueRepository.createQueue({
-    visitId: data.visitId,
-    queueNumber,
-    queueDate: date,
-    status: "MENUNGGU",
-  });
-};
 
 // get data queue
 export const getQueues = async () => {
