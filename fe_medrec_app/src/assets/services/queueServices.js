@@ -7,8 +7,14 @@ export const createQueue = async (queueData) => {
   });
 };
 
-export const getQueues = async () => {
-  return await fetchApi("/queues", {
+export const getQueues = async ({ page = 1, limit = 10, search = "" }) => {
+  const params = new URLSearchParams({
+    page,
+    limit,
+    search,
+  });
+
+  return await fetchApi(`/queues?${params.toString()}`, {
     method: "GET",
   });
 };

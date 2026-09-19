@@ -1,28 +1,21 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Table, Th, Td, EmptyRow } from "../../components/Table";
-import {
-  getQueues,
-  callQueue,
-  updateQueueStatus,
-} from "../../services/queueServices";
+import { updateQueueStatus } from "../../services/queueServices";
+import { useQueue } from "../../hooks/useQueue";
+import Pagination from "../../components/Pagination";
+import QueueTable from "../../components/registration/QueueTable";
 
 const QueuePage = () => {
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState("ALL");
-  const [queues, setQueues] = useState([]);
+  const LIMIT = 10;
 
-  const fetchQueues = async () => {
-    try {
-      const result = await getQueues();
-      setQueues(result.data || result);
-    } catch (error) {
-      console.error("Gagal memuat data pasien:", error.message);
-    }
-  };
-
-  useEffect(() => {
-    fetchQueues();
-  }, []);
+  const { queues, stats, totalPages, refetch } = useQueue({
+    page,
+    limit: LIMIT,
+    search,
+  });
 
   const getStatusLabel = (status) => {
     const statusMap = {
@@ -48,102 +41,30 @@ const QueuePage = () => {
     return statusMap[status] || "bg-gray-100 text-gray-600";
   };
 
-  const handleCall = async (id) => {
-    try {
-      const result = await callQueue(id);
-
-      if (!result.success) {
-        alert(result.message || "Gagal memanggil antrean");
-        return;
-      }
-
-      setQueues((prev) =>
-        prev.map((queue) =>
-          queue.id === id
-            ? {
-                ...queue,
-                status: "DIPANGGIL",
-              }
-            : queue,
-        ),
-      );
-    } catch (error) {
-      console.error("Gagal memanggil antrean:", error.message);
-
-      alert(error.message || "Terjadi kesalahan saat memanggil antrean");
-    }
-  };
-
-  const handleSkip = async (id) => {
+  const handleStatus = async (id, status) => {
     try {
       const result = await updateQueueStatus(id, {
-        status: "DILEWATI",
+        status: status,
       });
 
       if (!result.success) {
-        alert(result.message || "Gagal melewati antrean");
+        alert(result.message || "Gagal mengubah status");
         return;
       }
 
-      setQueues((prev) =>
-        prev.map((queue) =>
-          queue.id === id
-            ? {
-                ...queue,
-                status: "DILEWATI",
-              }
-            : queue,
-        ),
-      );
+      refetch();
     } catch (error) {
-      console.error("Gagal melewati antrean:", error.message);
-
-      alert(error.message || "Terjadi kesalahan saat melewati antrean");
+      alert(error.message || "Terjadi kesalahan saat mengubah");
     }
   };
 
-  const handleCancel = async (id) => {
-    try {
-      const result = await updateQueueStatus(id, {
-        status: "BATAL",
-      });
-
-      if (!result.success) {
-        alert(result.message || "Gagal membatalkan antrean");
-        return;
-      }
-
-      setQueues((prev) =>
-        prev.map((queue) =>
-          queue.id === id
-            ? {
-                ...queue,
-                status: "BATAL",
-              }
-            : queue,
-        ),
-      );
-    } catch (error) {
-      console.error("Gagal melewati antrean:", error.message);
-      alert(error.message || "Terjadi kesalahan saat membatalkan antrean");
+  const handlePageChange = (newPage) => {
+    if (newPage < 1 || newPage > totalPages) {
+      return;
     }
+
+    setPage(newPage);
   };
-
-  const filteredQueues = queues.filter((queue) => {
-    const keyword = search.toLowerCase();
-
-    const matchesSearch =
-      queue.queueNumber.toLowerCase().includes(keyword) ||
-      queue.visit.patient.name.toLowerCase().includes(keyword) ||
-      queue.visit.patient.recordNumber.toLowerCase().includes(keyword) ||
-      queue.visit.poli.name.toLowerCase().includes(keyword) ||
-      queue.visit.doctor.name.toLowerCase().includes(keyword);
-
-    const matchesStatus =
-      statusFilter === "ALL" || queue.status === statusFilter;
-
-    return matchesSearch && matchesStatus;
-  });
 
   return (
     <div>
@@ -162,7 +83,7 @@ const QueuePage = () => {
           <p className="text-sm text-gray-500">Total Antrean</p>
 
           <p className="mt-2 text-2xl font-semibold text-gray-800">
-            {queues.length}
+            {stats.totalQueues}
           </p>
 
           <p className="mt-1 text-xs text-gray-400">Antrean hari ini</p>
@@ -172,7 +93,7 @@ const QueuePage = () => {
           <p className="text-sm text-gray-500">Menunggu</p>
 
           <p className="mt-2 text-2xl font-semibold text-yellow-600">
-            {queues.filter((queue) => queue.status === "MENUNGGU").length}
+            {stats.totalWaiting}
           </p>
 
           <p className="mt-1 text-xs text-gray-400">Belum dipanggil</p>
@@ -182,7 +103,7 @@ const QueuePage = () => {
           <p className="text-sm text-gray-500">Dipanggil</p>
 
           <p className="mt-2 text-2xl font-semibold text-green-600">
-            {queues.filter((queue) => queue.status === "DIPANGGIL").length}
+            {stats.totalCalled}
           </p>
 
           <p className="mt-1 text-xs text-gray-400">Sedang dipanggil</p>
@@ -192,7 +113,7 @@ const QueuePage = () => {
           <p className="text-sm text-gray-500">Selesai</p>
 
           <p className="mt-2 text-2xl font-semibold text-blue-600">
-            {queues.filter((queue) => queue.status === "SELESAI").length}
+            {stats.totalCompleted}
           </p>
 
           <p className="mt-1 text-xs text-gray-400">Pemeriksaan selesai</p>
@@ -240,80 +161,20 @@ const QueuePage = () => {
         </div>
 
         {/* TABLE */}
-
-        <Table>
-          <thead>
-            <tr>
-              <Th>Antrian</Th>
-              <Th>Nama</Th>
-              <Th>No. Rekam Medis</Th>
-              <Th>Poli</Th>
-              <Th>Dokter</Th>
-              <Th>Status</Th>
-              <Th className="text-center">Aksi</Th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {filteredQueues.length > 0 ? (
-              filteredQueues.map((queue) => (
-                <tr key={queue.id}>
-                  <Td>{queue.queueNumber}</Td>
-                  <Td>{queue.visit.patient.name}</Td>
-                  <Td>{queue.visit.patient.recordNumber}</Td>
-                  <Td>{queue.visit.poli.name}</Td>
-                  <Td>{queue.visit.doctor.name}</Td>
-                  <Td>
-                    <span
-                      className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${getStatusClass(
-                        queue.status,
-                      )}`}
-                    >
-                      {getStatusLabel(queue.status)}
-                    </span>
-                  </Td>
-                  <Td className="text-center">
-                    <div className="flex items-center justify-center gap-2">
-                      <button
-                        type="button"
-                        disabled={queue.status !== "MENUNGGU"}
-                        onClick={() => handleCall(queue.id)}
-                        className="rounded-lg bg-green-600 px-3 py-2 text-xs font-medium text-white transition hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-400"
-                      >
-                        Panggil
-                      </button>
-
-                      <button
-                        type="button"
-                        disabled={queue.status !== "MENUNGGU"}
-                        onClick={() => handleSkip(queue.id)}
-                        className="rounded-lg border border-gray-200 px-3 py-2 text-xs font-medium text-gray-600 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:text-gray-300"
-                      >
-                        Lewati
-                      </button>
-
-                      <button
-                        type="button"
-                        disabled={queue.status !== "MENUNGGU"}
-                        onClick={() => handleCancel(queue.id)}
-                        className="rounded-lg border border-red-100 px-3 py-2 text-xs font-medium text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:text-gray-300"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </Td>
-                </tr>
-              ))
-            ) : (
-              <EmptyRow colSpan={7} />
-            )}
-          </tbody>
-        </Table>
+        <QueueTable
+          queues={queues}
+          handleStatus={handleStatus}
+          getStatusClass={getStatusClass}
+          getStatusLabel={getStatusLabel}
+        />
 
         {/* FOOTER */}
         <div className="border-t border-gray-100 px-5 py-4">
-          <p className="text-xs text-gray-400">
-            Menampilkan {filteredQueues.length} dari {queues.length} antrean
-          </p>
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
         </div>
       </div>
     </div>

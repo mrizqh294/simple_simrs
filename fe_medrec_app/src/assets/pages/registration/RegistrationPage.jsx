@@ -6,7 +6,7 @@ import { usePatient } from "../../hooks/usePatient";
 import { usePoli } from "../../hooks/usePoli";
 import { useDoctor } from "../../hooks/useDoctor";
 import Pagination from "../../components/Pagination";
-import PatientTable from "../../components/registration/RegistrationTable";
+import PatientTable from "../../components/registration/PatientTable";
 import RegisterPatientModal from "../../components/registration/RegistrationModal";
 import VisitModal from "../../components/registration/VisitModal";
 import EditPatientModal from "../../components/registration/EditPatientModal";

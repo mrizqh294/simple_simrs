@@ -41,9 +41,8 @@ export default function Sidebar({ menuItems }) {
         <nav className="space-y-1">
           {menuItems.map((menu) => (
             <NavLink
-              key={menu.id || menu.link} // Gunakan link sebagai fallback key jika id tidak ada
+              key={menu.id || menu.link} 
               to={menu.link}
-              // NavLink menyediakan parameter 'isActive' di dalam className
               className={({ isActive }) =>
                 `flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-sm transition ${
                   isActive
@@ -63,10 +62,6 @@ export default function Sidebar({ menuItems }) {
           onClick={handleLogout}
           className="flex items-center gap-3 rounded-xl bg-gray-50 p-3 cursor-pointer hover:bg-gray-100 transition"
         >
-          {/* <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100 font-semibold text-green-700">
-            LOGOUT
-          </div> */}
-
           <div className="min-w-0">
             <p className="text-gray-500 hover:text-gray-800">Logout</p>
           </div>

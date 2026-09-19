@@ -25,12 +25,18 @@ export const createQueue = async (req, res) => {
 
 export const getQueues = async (req, res) => {
   try {
-    const queues = await queueServices.getQueues();
+    const page = Math.max(Number(req.query.page) || 1, 1);
+
+    const limit = Math.min(Math.max(Number(req.query.limit) || 10, 1), 100);
+
+    const search = req.query.search?.trim() || "";
+
+    const result = await queueServices.getQueues({ page, limit, search });
 
     return res.status(200).json({
       success: true,
       message: "Data antrean berhasil dimuat",
-      data: queues,
+      ...result,
     });
   } catch (error) {
     console.error(error);

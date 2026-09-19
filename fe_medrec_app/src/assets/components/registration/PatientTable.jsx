@@ -1,4 +1,4 @@
-import { Table, Th, Td, EmptyRow } from "./../Table";
+import { Table, Th, Td, EmptyRow } from "../Table";
 
 const PatientTable = ({ patients, page = 1, limit = 10, onEdit, onVisit }) => {
   return (

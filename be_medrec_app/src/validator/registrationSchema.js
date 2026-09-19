@@ -1,7 +1,7 @@
 import * as z from "zod";
 
 const registrationSchema = z.object({
-  nik: z.string().min(1),
+  nik: z.string().length(16).regex(/^\d+$/),
   name: z.string().min(2).max(100),
   age: z.number().int().min(0),
   gender: z.enum(["L", "P"]),

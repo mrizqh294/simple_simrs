@@ -8,6 +8,12 @@ export const findQueueByVisitId = async (visitId) => {
   });
 };
 
+export const countQueues = async (where) => {
+  return await prisma.queue.count({
+    where,
+  });
+};
+
 export const findLastQueueByDate = async (tx, queueDate) => {
   const result = await tx.$queryRaw`
     SELECT *
@@ -46,14 +52,11 @@ export const updateQueueStatus = async (id, status) => {
   });
 };
 
-export const getQueues = async (startOfDay, endOfDay) => {
+export const getQueues = async ({ where, skip, take }) => {
   return prisma.queue.findMany({
-    where: {
-      queueDate: {
-        gte: startOfDay,
-        lte: endOfDay,
-      },
-    },
+    where,
+    skip,
+    take,
 
     select: {
       id: true,
