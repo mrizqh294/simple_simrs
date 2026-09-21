@@ -31,11 +31,6 @@ export const registerPatient = async (data) => {
       receptionistId: Number(data.receptionistId),
       description: data.description,
       visitDate,
-      status: "MENUNGGU",
-    },
-
-    queueData: {
-      status: "MENUNGGU",
     },
   });
 };

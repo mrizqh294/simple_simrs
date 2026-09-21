@@ -8,13 +8,13 @@ export const getVisits = async () => {
 export const createVisit = async (data) => {
   const visitDate = new Date();
 
-  return visitRepository.createVisitWithQueue({
+  return visitRepository.createVisit({
     patientId: data.patientId,
     doctorId: data.doctorId,
     poliId: data.poliId,
-    receptionistId: data.receptionistId,
-    visitDate,
+    receptionistId: Number(data.receptionistId),
     description: data.description,
+    visitDate,
   });
 };
 

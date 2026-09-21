@@ -14,11 +14,12 @@ export const countQueues = async (where) => {
   });
 };
 
-export const findLastQueueByDate = async (tx, queueDate) => {
+export const findLastQueueByDate = async (tx, queueDate, poliId ) => {
   const result = await tx.$queryRaw`
     SELECT *
     FROM Queue
     WHERE queueDate = DATE(${queueDate})
+    AND poliId = ${poliId}
     ORDER BY queueNumber DESC
     LIMIT 1
     FOR UPDATE

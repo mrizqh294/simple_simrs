@@ -1,5 +1,5 @@
 import { prisma } from "./../config/database.js";
-import * as queueRepository from"./../repository/queueRepository.js"
+import * as queueRepository from "./../repository/queueRepository.js";
 import { createQueueNumber } from "../lib/queueNumber.js";
 
 export const getVisits = async () => {
@@ -20,7 +20,7 @@ export const getVisits = async () => {
         },
       },
 
-      recepsionist: {
+      receptionist: {
         select: {
           name: true,
         },
@@ -29,51 +29,58 @@ export const getVisits = async () => {
   });
 };
 
-export const createVisitWithQueue = async ({
-  patientId,
-  doctorId,
-  poliId,
-  receptionistId,
-  visitDate,
-  description,
-}) => {
-  return prisma.$transaction(async (tx) => {
-
-    // membuat queue number
-    const queueDate = new Date(visitDate);
-    queueDate.setHours(0, 0, 0, 0);
-    const lastQueue = await queueRepository.findLastQueueByDate(tx, queueDate);
-    const queueNumber = await createQueueNumber(lastQueue);
-
-    // insert data
-    const visit = await tx.visit.create({
-      data: {
-        patientId,
-        doctorId,
-        poliId,
-        receptionistId,
-        visitDate,
-        description,
-        status: "MENUNGGU",
-      },
-    });
-
-    const queue = await tx.queue.create({
-      data: {
-        visitId: visit.id,
-        queueNumber,
-        queueDate,
-        status: "MENUNGGU",
-      },
-    });
-
-    return {
-      visit,
-      queue,
-    };
+export const createVisitWithQueue = async (tx, visitData) => {
+  const visit = await tx.visit.create({
+    data: {
+      ...visitData,
+    },
   });
+
+  const queueDate = new Date(visit.visitDate);
+
+  queueDate.setHours(0, 0, 0, 0);
+
+  const lastQueue = await queueRepository.findLastQueueByDate(
+    tx,
+    queueDate,
+    visit.poliId,
+  );
+
+  const queueNumber = await createQueueNumber(lastQueue, visit.poliId);
+
+  const queue = await tx.queue.create({
+    data: {
+      queueNumber,
+      queueDate,
+      status: "MENUNGGU",
+
+      visit: {
+        connect: {
+          id: visit.id,
+        },
+      },
+
+      poli: {
+        connect: {
+          id: visit.poliId,
+        },
+      },
+    },
+  });
+
+  return {
+    visit,
+    queue,
+  };
 };
 
+export const createVisit = async (visitData) => {
+  const result = await prisma.$transaction(async (tx) => {
+    return createVisitWithQueue(tx, visitData);
+  });
+
+  return result;
+};
 
 export const findVisitById = async (id) => {
   return prisma.visit.findUnique({
