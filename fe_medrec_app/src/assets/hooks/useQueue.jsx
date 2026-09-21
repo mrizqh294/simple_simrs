@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getQueues } from "./../services/queueServices";
 
-export const useQueue = ({ page = 1, limit = 10, search = "" }) => {
+export const useQueue = ({ page = 1, limit = 10, search = "" , filter=""}) => {
   const [queues, setQueues] = useState([]);
   const [stats, setStats] = useState({});
   const [totalPages, setTotalPages] = useState([]);
@@ -14,7 +14,7 @@ export const useQueue = ({ page = 1, limit = 10, search = "" }) => {
       setLoading(true);
       setError("");
 
-      const result = await getQueues({ page, limit, search });
+      const result = await getQueues({ page, limit, search, filter });
 
       setQueues(result.data);
       setStats(result.stat);
@@ -29,7 +29,7 @@ export const useQueue = ({ page = 1, limit = 10, search = "" }) => {
 
   useEffect(() => {
     loadQueues();
-  }, [page, limit, search]);
+  }, [page, limit, search, filter]);
 
   return {
     queues,

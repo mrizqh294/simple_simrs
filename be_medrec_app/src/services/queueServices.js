@@ -1,7 +1,7 @@
 import * as queueRepository from "./../repository/queueRepository.js";
 
 // get data queue
-export const getQueues = async ({ page, limit, search }) => {
+export const getQueues = async ({ page, limit, search, filter }) => {
   const today = new Date();
 
   const startOfDay = new Date(today);
@@ -21,6 +21,10 @@ export const getQueues = async ({ page, limit, search }) => {
 
   const where = {
     ...queueDate,
+    
+    ...(filter && {
+      status : filter
+    }),
 
     ...(search && {
       visit: {

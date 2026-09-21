@@ -17,6 +17,7 @@ const Registration = () => {
   const [formData, setFormData] = useState({});
   const [activeModal, setActiveModal] = useState(null);
   const [selectedPatient, setSelectedPatient] = useState(null);
+  const [selectedPoliId, setSelectedPoliId] = useState(null);
 
   const LIMIT = 10;
 
@@ -27,7 +28,7 @@ const Registration = () => {
   });
 
   const { polies } = usePoli();
-  const { doctors } = useDoctor();
+  const { doctors } = useDoctor(selectedPoliId);
 
   const openRegisterModal = () => {
     setActiveModal("register");
@@ -62,6 +63,10 @@ const Registration = () => {
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "poliId") {
+      setSelectedPoliId(value);
+    }
   };
 
   const handlePageChange = (newPage) => {

@@ -7,11 +7,12 @@ export const createQueue = async (queueData) => {
   });
 };
 
-export const getQueues = async ({ page = 1, limit = 10, search = "" }) => {
+export const getQueues = async ({ page = 1, limit = 10, search = "", filter= "" }) => {
   const params = new URLSearchParams({
     page,
     limit,
     search,
+    filter
   });
 
   return await fetchApi(`/queues?${params.toString()}`, {

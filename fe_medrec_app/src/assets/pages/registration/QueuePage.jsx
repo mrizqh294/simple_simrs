@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Table, Th, Td, EmptyRow } from "../../components/Table";
 import { updateQueueStatus } from "../../services/queueServices";
 import { useQueue } from "../../hooks/useQueue";
 import Pagination from "../../components/Pagination";
@@ -8,13 +7,14 @@ import QueueTable from "../../components/registration/QueueTable";
 const QueuePage = () => {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const [statusFilter, setStatusFilter] = useState("ALL");
+  const [statusFilter, setStatusFilter] = useState("");
   const LIMIT = 10;
 
   const { queues, stats, totalPages, refetch } = useQueue({
     page,
     limit: LIMIT,
     search,
+    filter : statusFilter,
   });
 
   const getStatusLabel = (status) => {
@@ -150,7 +150,7 @@ const QueuePage = () => {
               onChange={(event) => setStatusFilter(event.target.value)}
               className="rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-600 outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-100"
             >
-              <option value="ALL">Semua Status</option>
+              <option value="">Semua Status</option>
               <option value="MENUNGGU">Menunggu</option>
               <option value="DIPANGGIL">Dipanggil</option>
               <option value="DILEWATI">Dilewati</option>

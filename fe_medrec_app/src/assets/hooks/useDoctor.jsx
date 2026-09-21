@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { getDoctors } from "./../services/doctorServices";
 
 
-export const useDoctor = () => {
+export const useDoctor = (poliId) => {
   const [doctors, setDoctors] = useState([]);
 
   const [loading, setLoading] = useState(true);
@@ -13,7 +13,7 @@ export const useDoctor = () => {
       setLoading(true);
       setError("");
 
-      const result = await getDoctors();
+      const result = await getDoctors(poliId);
 
       setDoctors(result.data);
     } catch (error) {
@@ -25,13 +25,17 @@ export const useDoctor = () => {
   };
 
   useEffect(() => {
+    if (!poliId) {
+      setDoctors([]);
+      return;
+    }
+
     loadDoctor();
-  }, []);
+  }, [poliId]);
 
   return {
     doctors,
     loading,
-    error,
-    refetch: loadDoctor,
+    error
   };
 };

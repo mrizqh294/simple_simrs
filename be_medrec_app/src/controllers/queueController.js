@@ -31,7 +31,9 @@ export const getQueues = async (req, res) => {
 
     const search = req.query.search?.trim() || "";
 
-    const result = await queueServices.getQueues({ page, limit, search });
+    const filter = req.query.filter?.trim() || "";
+
+    const result = await queueServices.getQueues({ page, limit, search, filter });
 
     return res.status(200).json({
       success: true,
