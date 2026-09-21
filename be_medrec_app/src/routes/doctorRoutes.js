@@ -5,6 +5,6 @@ import { getDoctors } from "../controllers/doctorController.js";
 
 const router = express.Router();
 
-router.get("/doctor", auth, roleCheck("ADMIN", "PENDAFTARAN"), getDoctors);
+router.get("/doctors", auth, roleCheck("ADMIN", "PENDAFTARAN"), getDoctors);
 
 export default router;

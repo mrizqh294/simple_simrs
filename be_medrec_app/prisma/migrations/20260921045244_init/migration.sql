@@ -4,7 +4,7 @@ CREATE TABLE `User` (
     `name` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NOT NULL,
     `password` VARCHAR(191) NOT NULL,
-    `role` ENUM('ADMIN', 'DOKTER', 'PENDAFTARAN') NOT NULL DEFAULT 'ADMIN',
+    `role` ENUM('ADMIN', 'DOKTER', 'PENDAFTARAN', 'PERAWAT') NOT NULL DEFAULT 'ADMIN',
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
@@ -32,6 +32,14 @@ CREATE TABLE `Patient` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `UserPoli` (
+    `userId` INTEGER NOT NULL,
+    `poliId` INTEGER NOT NULL,
+
+    PRIMARY KEY (`userId`, `poliId`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `Poli` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
@@ -46,6 +54,7 @@ CREATE TABLE `Poli` (
 CREATE TABLE `Queue` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `visitId` INTEGER NOT NULL,
+    `poliId` INTEGER NOT NULL,
     `queueNumber` VARCHAR(191) NOT NULL,
     `queueDate` DATE NOT NULL,
     `status` ENUM('MENUNGGU', 'DIPANGGIL', 'SELESAI', 'DILEWATI', 'BATAL') NOT NULL DEFAULT 'MENUNGGU',
@@ -53,8 +62,8 @@ CREATE TABLE `Queue` (
     `updatedAt` DATETIME(3) NOT NULL,
 
     UNIQUE INDEX `Queue_visitId_key`(`visitId`),
-    INDEX `Queue_queueDate_idx`(`queueDate`),
-    UNIQUE INDEX `Queue_queueDate_queueNumber_key`(`queueDate`, `queueNumber`),
+    INDEX `Queue_queueDate_poliId_idx`(`queueDate`, `poliId`),
+    UNIQUE INDEX `Queue_queueDate_poliId_queueNumber_key`(`queueDate`, `poliId`, `queueNumber`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -64,7 +73,7 @@ CREATE TABLE `Visit` (
     `patientId` INTEGER NOT NULL,
     `doctorId` INTEGER NOT NULL,
     `poliId` INTEGER NOT NULL,
-    `recepsionistId` INTEGER NOT NULL,
+    `receptionistId` INTEGER NOT NULL,
     `visitDate` DATETIME(3) NOT NULL,
     `description` TEXT NOT NULL,
     `status` ENUM('MENUNGGU', 'CHECK_IN', 'PEMERIKSAAN', 'SELESAI', 'BATAL') NOT NULL DEFAULT 'MENUNGGU',
@@ -95,7 +104,16 @@ CREATE TABLE `MedicalRecord` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
+ALTER TABLE `UserPoli` ADD CONSTRAINT `UserPoli_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `UserPoli` ADD CONSTRAINT `UserPoli_poliId_fkey` FOREIGN KEY (`poliId`) REFERENCES `Poli`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE `Queue` ADD CONSTRAINT `Queue_visitId_fkey` FOREIGN KEY (`visitId`) REFERENCES `Visit`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Queue` ADD CONSTRAINT `Queue_poliId_fkey` FOREIGN KEY (`poliId`) REFERENCES `Poli`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Visit` ADD CONSTRAINT `Visit_patientId_fkey` FOREIGN KEY (`patientId`) REFERENCES `Patient`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
@@ -107,7 +125,7 @@ ALTER TABLE `Visit` ADD CONSTRAINT `Visit_poliId_fkey` FOREIGN KEY (`poliId`) RE
 ALTER TABLE `Visit` ADD CONSTRAINT `Visit_doctorId_fkey` FOREIGN KEY (`doctorId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Visit` ADD CONSTRAINT `Visit_recepsionistId_fkey` FOREIGN KEY (`recepsionistId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Visit` ADD CONSTRAINT `Visit_receptionistId_fkey` FOREIGN KEY (`receptionistId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `MedicalRecord` ADD CONSTRAINT `MedicalRecord_doctorId_fkey` FOREIGN KEY (`doctorId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

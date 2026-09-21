@@ -10,19 +10,48 @@ export const findUserByEmail = async (email) => {
   return user;
 };
 
-export const getUsersByRole = async (role) => {
-  const user = await prisma.user.findMany({
+export const getUsersByRole = async (role, poliId) => {
+  const users = await prisma.user.findMany({
     where: {
       role,
+
+      ...(poliId && {
+        userPoli: {
+          some: {
+            poliId: Number(poliId),
+          },
+        },
+      }),
     },
   });
 
-  return user;
+  return users;
 };
 
 export const createUser = async (data) => {
   const user = await prisma.user.create({
-    data,
+    data: {
+      name: data.name,
+      email: data.email,
+      password: data.password,
+      role: data.role,
+
+      ...(data.poliIds && {
+        userPoli: {
+          create: data.poliIds.map((poliId) => ({
+            poliId,
+          })),
+        },
+      }),
+    },
+
+    include: {
+      userPoli: {
+        include: {
+          poli: true,
+        },
+      },
+    },
   });
 
   return user;

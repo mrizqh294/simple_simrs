@@ -16,6 +16,7 @@ enum Role {
   ADMIN
   DOKTER
   PENDAFTARAN
+  PERAWAT
 }
 
 enum Gender {
@@ -50,8 +51,9 @@ model User {
 
   doctorVisits       Visit[] @relation("DoctorVisits")
   receptionistVisits Visit[] @relation("ReceptionistVisits")
-
+  userPoli UserPoli[]
   medicalRecords MedicalRecord[]
+
 }
   
 model Patient {
@@ -70,6 +72,16 @@ model Patient {
   visit Visit[]
 }
 
+model UserPoli {
+  userId Int
+  poliId Int
+
+  user User @relation(fields: [userId], references: [id])
+  poli Poli @relation(fields: [poliId], references: [id])
+
+  @@id([userId, poliId])
+}
+
 model Poli {
   id            Int      @id @default(autoincrement())
   name          String   @unique
@@ -77,11 +89,15 @@ model Poli {
   updatedAt     DateTime @updatedAt
 
   visit Visit[]
+  poli Queue[]
+  userPoli UserPoli[]
+ 
 }
 
 model Queue {
   id            Int      @id @default(autoincrement())
   visitId       Int      @unique
+  poliId        Int       
   queueNumber   String   
   queueDate     DateTime @db.Date
   status        QueueStatus   @default(MENUNGGU)
@@ -89,9 +105,11 @@ model Queue {
   updatedAt     DateTime @updatedAt
 
   visit         Visit    @relation(fields: [visitId], references: [id], onDelete: Cascade)
+  poli          Poli    @relation(fields: [poliId], references: [id], onDelete: Cascade)
 
-  @@unique([queueDate, queueNumber])
-  @@index([queueDate])
+
+  @@unique([queueDate, poliId, queueNumber])
+  @@index([queueDate, poliId])
 }
 
 model Visit {
