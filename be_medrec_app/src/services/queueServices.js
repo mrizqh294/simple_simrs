@@ -1,7 +1,7 @@
 import * as queueRepository from "./../repository/queueRepository.js";
 
 // get data queue
-export const getQueues = async ({ page, limit, search, filter }) => {
+export const getQueues = async ({ page, limit, search, filter }, poliId) => {
   const today = new Date();
 
   const startOfDay = new Date(today);
@@ -12,7 +12,8 @@ export const getQueues = async ({ page, limit, search, filter }) => {
 
   const skip = (page - 1) * limit;
 
-  const queueDate = {
+   const baseWhere = {
+    poliId,
     queueDate: {
       gte: startOfDay,
       lte: endOfDay,
@@ -20,7 +21,7 @@ export const getQueues = async ({ page, limit, search, filter }) => {
   };
 
   const where = {
-    ...queueDate,
+    ...baseWhere,
     
     ...(filter && {
       status : filter
@@ -58,20 +59,20 @@ export const getQueues = async ({ page, limit, search, filter }) => {
 
   const [totalQueues, totalCalled, totalWaiting, totalCompleted] =
     await Promise.all([
-      queueRepository.countQueues(queueDate),
+      queueRepository.countQueues(baseWhere),
 
       queueRepository.countQueues({
-        ...queueDate,
+        ...baseWhere,
         status: "DIPANGGIL",
       }),
 
       queueRepository.countQueues({
-        ...queueDate,
+        ...baseWhere,
         status: "MENUNGGU",
       }),
 
       queueRepository.countQueues({
-        ...queueDate,
+        ...baseWhere,
         status: "SELESAI",
       }),
     ]);

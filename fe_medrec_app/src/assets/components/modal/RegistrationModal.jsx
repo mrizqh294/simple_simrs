@@ -1,21 +1,39 @@
-import Modal from "./../Modal";
-import Input from "./../Input";
-import Select from "./../Select";
-import Textarea from "./../Textarea";
+import Modal from "../Modal";
+import Input from "../Input";
+import Select from "../Select";
+import Textarea from "../Textarea";
 
-const EditPatientModal = ({ show, onClose, onSubmit, formData, onChange }) => {
+const RegisterPatientModal = ({
+  show,
+  onClose,
+  onSubmit,
+  formData,
+  onChange,
+  polies,
+  doctors,
+}) => {
   return (
     <Modal
       show={show}
       onClose={onClose}
-      title="Edit Data Pasien"
-      description="Masukkan data pasien untuk mengubah data"
+      title="Registrasi Pasien Baru"
+      description="Masukkan data pasien untuk membuat data rekam medis baru."
       size="4xl"
     >
       <form onSubmit={onSubmit}>
         <div className="space-y-6 px-6 py-5">
           {/* DATA PASIEN */}
           <div>
+            <div className="mb-4">
+              <h3 className="text-sm font-semibold text-gray-800">
+                Data Pasien
+              </h3>
+
+              <p className="mt-1 text-xs text-gray-400">
+                Masukkan informasi identitas pasien.
+              </p>
+            </div>
+
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <Input
                 label="NIK"
@@ -51,9 +69,9 @@ const EditPatientModal = ({ show, onClose, onSubmit, formData, onChange }) => {
                 name="gender"
                 value={formData.gender || ""}
                 onChange={onChange}
+                placeholder="Pilih jenis kelamin"
                 required
                 options={[
-                  { value: "", label: "Pilih jenis kelamin" },
                   { value: "L", label: "Laki-laki" },
                   { value: "P", label: "Perempuan" },
                 ]}
@@ -91,6 +109,60 @@ const EditPatientModal = ({ show, onClose, onSubmit, formData, onChange }) => {
               </div>
             </div>
           </div>
+
+          {/* DATA KUNJUNGAN */}
+          <div className="border-t border-gray-100 pt-6">
+            <div className="mb-4">
+              <h3 className="text-sm font-semibold text-gray-800">
+                Data Kunjungan
+              </h3>
+
+              <p className="mt-1 text-xs text-gray-400">
+                Masukkan informasi kunjungan pasien.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <Select
+                label="Poli"
+                name="poliId"
+                value={formData.poliId || ""}
+                onChange={onChange}
+                placeholder="Pilih poli"
+                required
+                options={polies.map((poli) => ({
+                  value: poli.id,
+                  label: poli.name,
+                }))}
+              />
+
+              <Select
+                label="Dokter"
+                name="doctorId"
+                value={formData.doctorId || ""}
+                onChange={onChange}
+                placeholder="Pilih dokter"
+                required
+                options={doctors.map((doctor) => ({
+                  value: doctor.id,
+                  label: doctor.name,
+                }))}
+              />
+            </div>
+          </div>
+
+          {/* KETERANGAN */}
+          <div className="border-t border-gray-100 pt-6">
+            <Textarea
+              label="Keterangan"
+              name="description"
+              value={formData.description || ""}
+              onChange={onChange}
+              placeholder="Masukkan keluhan atau keterangan pasien"
+              rows={4}
+              required
+            />
+          </div>
         </div>
 
         {/* FOOTER */}
@@ -107,7 +179,7 @@ const EditPatientModal = ({ show, onClose, onSubmit, formData, onChange }) => {
             type="submit"
             className="cursor-pointer rounded-lg bg-green-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
           >
-            Simpan
+            Registrasi Pasien
           </button>
         </div>
       </form>
@@ -115,4 +187,4 @@ const EditPatientModal = ({ show, onClose, onSubmit, formData, onChange }) => {
   );
 };
 
-export default EditPatientModal;
+export default RegisterPatientModal;

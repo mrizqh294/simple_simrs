@@ -13,6 +13,7 @@ export default function Sidebar({ menuItems }) {
         alert(result.message || "Gagal logout");
         return;
       }
+      localStorage.removeItem("user")
       navigate("/", { replace: true });
     } catch (error) {
       console.error("Gagal logout:", error);

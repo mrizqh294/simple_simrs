@@ -37,7 +37,15 @@ const Login = () => {
         return;
       }
 
-      navigate("/registration", { replace: true });
+      localStorage.setItem("user", JSON.stringify(result.data));
+
+      if (result.data.role === "PENDAFTARAN") {
+        navigate("/registration");
+      }
+
+      if (result.data.role === "PERAWAT") {
+        navigate("/nurse/queue");
+      }
     } catch (error) {
       console.error("Login gagal:", error);
 

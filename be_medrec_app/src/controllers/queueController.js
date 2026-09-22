@@ -1,4 +1,6 @@
 import * as queueServices from "./../services/queueServices.js"
+import { getUserPoli } from "../repository/userPoliRepository.js";
+import { getCurrentUser } from "../lib/auth.js";
 
 // POST /queues
 
@@ -33,7 +35,11 @@ export const getQueues = async (req, res) => {
 
     const filter = req.query.filter?.trim() || "";
 
-    const result = await queueServices.getQueues({ page, limit, search, filter });
+    const currentUser = await getCurrentUser(req);
+
+    const userPoli = await getUserPoli(currentUser.userId);
+  
+    const result = await queueServices.getQueues({ page, limit, search, filter }, userPoli.poliId);
 
     return res.status(200).json({
       success: true,

@@ -1,15 +1,15 @@
 import { useState } from "react";
-import { registerPatient } from "../../services/registrationServices";
-import { createVisit } from "../../services/visitServices";
-import { updatePatient } from "../../services/patientServices";
-import { usePatient } from "../../hooks/usePatient";
-import { usePoli } from "../../hooks/usePoli";
-import { useDoctor } from "../../hooks/useDoctor";
-import Pagination from "../../components/Pagination";
-import PatientTable from "../../components/registration/PatientTable";
-import RegisterPatientModal from "../../components/registration/RegistrationModal";
-import VisitModal from "../../components/registration/VisitModal";
-import EditPatientModal from "../../components/registration/EditPatientModal";
+import { registerPatient } from "../services/registrationServices";
+import { createVisit } from "../services/visitServices";
+import { updatePatient } from "../services/patientServices";
+import { usePatient } from "../hooks/usePatient";
+import { usePoli } from "../hooks/usePoli";
+import { useDoctor } from "../hooks/useDoctor";
+import Pagination from "../components/Pagination";
+import PatientTable from "../components/table/PatientTable";
+import RegisterPatientModal from "../components/modal/RegistrationModal";
+import VisitModal from "../components/modal/VisitModal";
+import EditPatientModal from "../components/modal/EditPatientModal";
 
 const Registration = () => {
   const [search, setSearch] = useState("");

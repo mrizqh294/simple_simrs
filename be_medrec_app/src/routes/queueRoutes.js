@@ -17,8 +17,8 @@ import {
 
 const router = express.Router();
 
-router.get("/queues", auth, roleCheck("PENDAFTARAN", "ADMIN"), getQueues);
-router.patch("/queues/:id/call", auth, roleCheck("PENDAFTARAN"), callQueue);
+router.get("/queues", auth, roleCheck("PERAWAT", "ADMIN"), getQueues);
+router.patch("/queues/:id/call", auth, roleCheck("PERAWAT"), callQueue);
 
 router.post(
   "/queues",
@@ -31,7 +31,7 @@ router.post(
 router.patch(
   "/queues/:id/status",
   auth,
-  roleCheck("PENDAFTARAN"),
+  roleCheck("PERAWAT"),
   validate(updateQueueStatusSchema),
   updateQueueStatus,
 );

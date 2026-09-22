@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { updateQueueStatus } from "../../services/queueServices";
-import { useQueue } from "../../hooks/useQueue";
-import Pagination from "../../components/Pagination";
-import QueueTable from "../../components/registration/QueueTable";
+import { updateQueueStatus } from "../services/queueServices";
+import { useQueue } from "../hooks/useQueue";
+import Pagination from "../components/Pagination";
+import QueueTable from "../components/table/QueueTable";
 
 const QueuePage = () => {
   const [search, setSearch] = useState("");
@@ -150,7 +150,6 @@ const QueuePage = () => {
               onChange={(event) => setStatusFilter(event.target.value)}
               className="rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-600 outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-100"
             >
-              <option value="">Semua Status</option>
               <option value="MENUNGGU">Menunggu</option>
               <option value="DIPANGGIL">Dipanggil</option>
               <option value="DILEWATI">Dilewati</option>
