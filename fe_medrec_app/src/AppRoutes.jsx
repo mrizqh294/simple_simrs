@@ -5,6 +5,7 @@ import QueuePage from "./assets/pages/QueuePage";
 import ProtectedRoute from "./ProtectedRoute";
 import AppLayout from "./assets/pages/Layout";
 import Unauthorized from "./assets/pages/UnauthorizedPage";
+import VisitPage from "./assets/pages/VisitPage";
 
 export const router = createBrowserRouter([
   {
@@ -38,6 +39,22 @@ export const router = createBrowserRouter([
           {
             path: "queue",
             element: <QueuePage />,
+          },
+        ],
+      },
+    ],
+  },
+
+  {
+    element: <ProtectedRoute allowedRoles={["DOKTER"]} />,
+    children: [
+      {
+        path:"/doctor/",
+        element: <AppLayout />,
+        children: [
+          {
+            path: "visits",
+            element: <VisitPage />,
           },
         ],
       },

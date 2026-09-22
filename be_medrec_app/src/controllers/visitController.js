@@ -5,11 +5,21 @@ import { getCurrentUser } from "./../lib/auth.js";
 
 export const getVisits = async (req, res) => {
   try {
-    const visits = await visitServices.getVisits();
+    const currentUser = await getCurrentUser(req);
+
+    const page = Math.max(Number(req.query.page) || 1, 1);
+
+    const limit = Math.min(Math.max(Number(req.query.limit) || 10, 1), 100);
+
+    const visits = await visitServices.getVisits(
+      { page, limit },
+      currentUser.userId,
+      currentUser.role,
+    );
 
     return res.status(200).json({
       success: true,
-      visits,
+      ...visits,
     });
   } catch (error) {
     console.error(error);

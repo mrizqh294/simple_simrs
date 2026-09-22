@@ -20,6 +20,7 @@ const router = express.Router();
 router.get(
   "/visits",
   auth,
+  roleCheck("PENDAFTARAN", "DOKTER", "ADMIN"),
   getVisits
 )
 

@@ -18,10 +18,8 @@ const MENUS = {
   ],
 
   DOKTER: [
-    { link: "/dashboard", label: "Dashboard" },
-    { link: "/queue", label: "Antrean" },
-    { link: "/visit", label: "Kunjungan" },
-    { link: "/medical-record", label: "Rekam Medis" },
+    { link: "/doctor/visits", label: "Kunjungan" },
+    { link: "/doctor/medical-record", label: "Rekam Medis" },
   ],
 
   PERAWAT: [

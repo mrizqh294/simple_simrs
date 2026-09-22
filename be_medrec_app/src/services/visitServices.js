@@ -1,7 +1,53 @@
 import * as visitRepository from "./../repository/visitRepository.js";
 
-export const getVisits = async () => {
-  return visitRepository.getVisits();
+export const getVisits = async ({ page, limit }, userId, role) => {
+  const today = new Date();
+
+  const skip = (page - 1) * limit;
+
+  const startOfDay = new Date(today);
+  startOfDay.setHours(0, 0, 0, 0);
+
+  const endOfDay = new Date(today);
+  endOfDay.setHours(23, 59, 59, 999);
+
+  let where = {};
+
+  if (role === "DOKTER") {
+    where = {
+      doctorId: userId,
+      visitDate: {
+        gte: startOfDay,
+        lte: endOfDay,
+      },
+    };
+  } else if (role === "PENDAFTARAN") {
+    where = {
+      receptionistId: userId,
+    };
+  }
+
+  const [visits, total] = await Promise.all([
+    visitRepository.getVisits({
+      where,
+      skip,
+      take: limit,
+    }),
+
+    visitRepository.countVisit(where),
+  ]);
+
+  const totalPages = Math.ceil(total / limit);
+
+  return {
+    data: visits,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages,
+    },
+  };
 };
 
 // create visit

@@ -2,8 +2,11 @@ import { prisma } from "./../config/database.js";
 import * as queueRepository from "./../repository/queueRepository.js";
 import { createQueueNumber } from "../lib/queueNumber.js";
 
-export const getVisits = async () => {
+export const getVisits = async ({ where, skip, take }) => {
   return prisma.visit.findMany({
+    where,
+    skip,
+    take,
     include: {
       patient: {
         select: {
@@ -26,6 +29,15 @@ export const getVisits = async () => {
         },
       },
     },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+};
+
+export const countVisit = async (where) => {
+  return await prisma.visit.count({
+    where,
   });
 };
 

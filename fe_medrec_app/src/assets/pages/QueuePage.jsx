@@ -7,7 +7,7 @@ import QueueTable from "../components/table/QueueTable";
 const QueuePage = () => {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const [statusFilter, setStatusFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("MENUNGGU");
   const LIMIT = 10;
 
   const { queues, stats, totalPages, refetch } = useQueue({

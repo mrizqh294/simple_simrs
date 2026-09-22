@@ -43,6 +43,10 @@ const Login = () => {
         navigate("/registration");
       }
 
+      if (result.data.role === "DOKTER") {
+        navigate("/doctor/visits");
+      }
+
       if (result.data.role === "PERAWAT") {
         navigate("/nurse/queue");
       }
