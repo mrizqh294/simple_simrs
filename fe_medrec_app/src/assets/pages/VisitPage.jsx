@@ -3,6 +3,7 @@ import { useVisit } from "./../hooks/useVisit";
 import Pagination from "./../components/Pagination";
 import VisitTable from "./../components/table/VisitTable";
 import ExaminationModal from "./../components/modal/ExaminationModal";
+import { createMedicalRecord } from "../services/medicalRecordServices";
 
 const VisitPage = () => {
   const [page, setPage] = useState(1);
@@ -45,7 +46,24 @@ const VisitPage = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    // Nanti proses pemeriksaan ditambahkan di sini
+    const result = await createMedicalRecord({
+      visitId: selectedVisit.id,
+      bloodTension: formData.bloodTension,
+      temperature: formData.temperature,
+      height: Number(formData.height),
+      weight: Number(formData.weight),
+      diagnosis: formData.diagnosis,
+      symptom: formData.symptom,
+      actionPlan: formData.actionPlan,
+      receipt: formData.receipt,
+    });
+
+    if (!result?.success) {
+      alert(result?.message || "Proses gagal");
+      return;
+    }
+
+    alert(result.message || "Proses berhasil");
 
     closeModal();
     await refetchVisit();

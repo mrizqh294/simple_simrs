@@ -53,6 +53,17 @@ export const updateQueueStatus = async (id, status) => {
   });
 };
 
+export const updateQueueStatusbyVisitId = async (id, status) => {
+  return prisma.queue.update({
+    where: {
+      visitId: Number(id),
+    },
+    data: {
+      status,
+    },
+  });
+};
+
 export const getQueues = async ({ where, skip, take }) => {
   return prisma.queue.findMany({
     where,
