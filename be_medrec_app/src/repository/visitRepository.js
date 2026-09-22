@@ -102,8 +102,8 @@ export const findVisitById = async (id) => {
   });
 };
 
-export const updateVisitStatus = async (id, status) => {
-  return prisma.visit.update({
+export const updateVisitStatus = async (tx, id, status) => {
+  return tx.visit.update({
     where: {
       id: Number(id),
     },

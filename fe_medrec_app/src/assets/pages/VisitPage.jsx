@@ -18,7 +18,27 @@ const VisitPage = () => {
     limit: LIMIT,
   });
 
-  console.log(visits);
+  const getStatusLabel = (status) => {
+    const statusMap = {
+      MENUNGGU: "Menunggu",
+      DIPERIKSA: "Diperiksa",
+      BATAL: "Dibatalkan",
+      SELESAI: "Selesai",
+    };
+
+    return statusMap[status] || status;
+  };
+
+  const getStatusClass = (status) => {
+    const statusMap = {
+      MENUNGGU: "bg-yellow-50 text-yellow-700",
+      DIPERIKSA: "bg-green-50 text-green-700",
+      BATAL: "bg-red-50 text-red-600",
+      SELESAI: "bg-blue-50 text-blue-700",
+    };
+
+    return statusMap[status] || "bg-gray-100 text-gray-600";
+  };
 
   const openExaminationModal = (visit) => {
     setSelectedVisit(visit);
@@ -97,7 +117,12 @@ const VisitPage = () => {
           </div>
 
           {/* TABLE */}
-          <VisitTable visits={visits} openModal={openExaminationModal} />
+          <VisitTable
+            visits={visits}
+            openModal={openExaminationModal}
+            getStatusClass={getStatusClass}
+            getStatusLabel={getStatusLabel}
+          />
 
           {/* TABLE FOOTER */}
           <div className="border-t border-gray-100 px-5 py-4">

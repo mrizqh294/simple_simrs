@@ -1,4 +1,6 @@
 import { prisma } from "./../config/database.js";
+import { updateVisitStatus } from "./visitRepository.js";
+import { updateQueueStatusbyVisitId } from "./queueRepository.js";
 
 export const findMedicalRecordByVisitId = async (visitId) => {
   return prisma.medicalRecord.findUnique({
@@ -9,8 +11,14 @@ export const findMedicalRecordByVisitId = async (visitId) => {
 };
 
 export const createMedicalRecord = async (data) => {
-  return prisma.medicalRecord.create({
-    data,
+  return await prisma.$transaction(async (tx) => {
+    const result = await tx.medicalRecord.create({
+      data,
+    });
+    await updateVisitStatus(tx, result.visitId, "SELESAI");
+    await updateQueueStatusbyVisitId(tx, result.visitId, "SELESAI");
+
+    return result;
   });
 };
 
@@ -22,7 +30,7 @@ export const getMedicalRecords = async (patientId) => {
       patientId: Number(patientId),
     };
   }
-  
+
   return prisma.medicalRecord.findMany({
     where,
     include: {

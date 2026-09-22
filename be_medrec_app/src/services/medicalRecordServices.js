@@ -1,6 +1,4 @@
 import * as medicalRecordRepository from "./../repository/medicalRecordRepository.js";
-import * as visitRepository from "./../repository/visitRepository.js"
-import { updateQueueStatusbyVisitId } from "../repository/queueRepository.js";
 
 export const createMedicalRecord = async (data) => {
   const existingMedicalRecord = await medicalRecordRepository.findMedicalRecordByVisitId(data.visitId);
@@ -16,10 +14,6 @@ export const createMedicalRecord = async (data) => {
   }
 
   const medicalRecord = await medicalRecordRepository.createMedicalRecord(data);
-
-  await visitRepository.updateVisitStatus(data.visitId, "SELESAI");
-
-  await updateQueueStatusbyVisitId(data.visitId, "SELESAI");
 
   return medicalRecord;
 };
