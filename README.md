@@ -1,9 +1,30 @@
-# Medical Record
+# Simple SIMRS
 
-Aplikasi **Medical Record** terdiri dari frontend dan backend untuk mengelola data rekam medis.
+Aplikasi **Simple SIMRS** terdiri dari frontend dan backend untuk mengelola data rekam medis dan pendaftaran pasien.
+
+Terdapat 4 role yaitu Admin, Pendaftaran, Perawat, dan Dokter.
+
+**Hak Akses Admin :**
+- Mengakses seluruh fitur aplikasi.
+- Manajemen user.
+
+**Hak Akses Pendaftaran :**
+- Mendaftarkan pasien Baru.
+- Mengedit data pasien.
+- Menambahkan kunjungan pasien.
+- Melihat history kunjungan.
+
+**Hak Akses Perawat :**
+- Melihat daftar antrian poliklinik.
+- Mengubah status antrian.
+
+**Hak Akses Dokter :**
+- Melihat data rekam medis pasien.
+- Menambahkan data rekam medis pasien.
+- Melihat data pasien.
 
 - **Frontend:** React.js, Vite, Tailwind CSS
-- **Backend:** Express.js, Prisma ORM, MySQL
+- **Backend:** Express.js, Zod, Prisma ORM, MySQL
 
 ## Requirements
 
@@ -17,14 +38,14 @@ Pastikan perangkat sudah memiliki:
 ## Project Structure
 
 ```text
-medical-record/
-├── backend/
+simple-simrs/
+├── be_medrec_app/
 │   ├── .env
 │   ├── package.json
 │   ├── prisma/
 │   └── src/
 │
-└── frontend/
+└── fe_medrec_app/
     ├── .env
     ├── package.json
     ├── vite.config.js
@@ -32,13 +53,13 @@ medical-record/
     └── src/
 ```
 
-> Nama folder `backend` dan `frontend` dapat disesuaikan dengan struktur project.
+> Nama folder `be_medrec_app` dan `fe_medrec_app` dapat disesuaikan dengan struktur project.
 
 ---
 
 # Backend
 
-REST API untuk aplikasi **Medical Record** menggunakan **Express.js**, **Prisma ORM**, dan **MySQL**.
+REST API untuk aplikasi **Simple SIMRS** menggunakan **Express.js**, **Prisma ORM**, dan **MySQL**, dan validasi input menggunakan **Zod**.
 
 ## Installation
 
@@ -326,13 +347,3 @@ Tambahkan ke `.gitignore`:
 ```
 
 ---
-
-# Development
-
-Untuk menghentikan server yang sedang berjalan, tekan:
-
-```text
-Ctrl + C
-```
-
-Project siap digunakan setelah backend dan frontend berhasil dijalankan.
