@@ -48,7 +48,7 @@ const Login = () => {
       }
 
       if (result.data.role === "PERAWAT") {
-        navigate("/nurse/queue");
+        navigate("/nurse/queues");
       }
     } catch (error) {
       console.error("Login gagal:", error);
