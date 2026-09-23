@@ -8,8 +8,21 @@ export const createMedicalRecord = async (recordData) => {
   });
 };
 
-export const getMedicalRecords = async () => {
-  return await fetchApi("/medical-records", {
+export const getMedicalRecords = async (
+  { page = 1, limit = 10, search = "" },
+  patientId,
+) => {
+  const params = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+    search,
+  });
+
+  if (patientId) {
+    params.append("patientId", patientId);
+  }
+
+  return await fetchApi(`/medical-records?${params.toString()}`, {
     method: "GET",
   });
 };

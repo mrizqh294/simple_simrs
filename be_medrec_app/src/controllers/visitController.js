@@ -11,8 +11,10 @@ export const getVisits = async (req, res) => {
 
     const limit = Math.min(Math.max(Number(req.query.limit) || 10, 1), 100);
 
+    const filter = req.query.filter?.trim() || "";
+
     const visits = await visitServices.getVisits(
-      { page, limit },
+      { page, limit, filter },
       currentUser.userId,
       currentUser.role,
     );

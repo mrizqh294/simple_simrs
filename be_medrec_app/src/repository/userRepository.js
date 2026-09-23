@@ -62,6 +62,7 @@ export const getUsers = async (role) => {
     select: {
       id: true,
       name: true,
+      email: true,
       role: true,
     },
     where: role

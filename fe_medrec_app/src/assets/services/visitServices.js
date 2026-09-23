@@ -1,9 +1,10 @@
 import { fetchApi } from "./api";
 
-export const getVisits = async ({ page = 1, limit = 10 }) => {
+export const getVisits = async ({ page = 1, limit = 10, filter="" }) => {
   const params = new URLSearchParams({
     page,
     limit,
+    filter,
   });
   
   return await fetchApi(`/visits?${params.toString()}`, {

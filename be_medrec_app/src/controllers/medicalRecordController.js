@@ -10,7 +10,7 @@ export const createMedicalRecord = async (req, res) => {
 
     const medicalRecord = await medicalRecordServices.createMedicalRecord({
       ...req.body,
-      doctorId : Number(currentUser.userId),
+      doctorId: Number(currentUser.userId),
     });
 
     return res.status(201).json({
@@ -28,18 +28,40 @@ export const createMedicalRecord = async (req, res) => {
   }
 };
 
-// GET /medical-record | /medical-record?patientId=id
+// GET /medical-record | /medical-record?patientId=id | /medical-record?doctorId=id
 
 export const getMedicalRecords = async (req, res) => {
   try {
     const { patientId } = req.query;
 
-    const medicalRecords = await medicalRecordRepository.getMedicalRecords(patientId);
+    const page = Math.max(Number(req.query.page) || 1, 1);
+
+    const limit = Math.min(Math.max(Number(req.query.limit) || 10, 1), 100);
+
+    const search = req.query.search?.trim() || "";
+
+    const currentUser = await getCurrentUser(req);
+
+    let doctorId;
+
+    if (currentUser.role === "DOKTER") {
+      doctorId = currentUser.userId;
+    }
+
+    const medicalRecords = await medicalRecordServices.getMedicalRecords(
+      {
+        page,
+        limit,
+        search,
+      },
+      doctorId,
+      patientId,
+    );
 
     return res.status(200).json({
       success: true,
       message: "Data medical records berhasil dimuat",
-      data: medicalRecords,
+      ...medicalRecords,
     });
   } catch (error) {
     console.error(error);

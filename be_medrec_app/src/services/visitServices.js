@@ -1,6 +1,6 @@
 import * as visitRepository from "./../repository/visitRepository.js";
 
-export const getVisits = async ({ page, limit }, userId, role) => {
+export const getVisits = async ({ page, limit, filter }, userId, role) => {
   const today = new Date();
 
   const skip = (page - 1) * limit;
@@ -21,6 +21,10 @@ export const getVisits = async ({ page, limit }, userId, role) => {
         lte: endOfDay,
       },
     };
+
+    if (filter) {
+      where.status = filter;
+    }
   } else if (role === "PENDAFTARAN") {
     where = {
       receptionistId: userId,

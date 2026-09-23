@@ -19,11 +19,11 @@ const MENUS = {
 
   DOKTER: [
     { link: "/doctor/visits", label: "Kunjungan" },
-    { link: "/doctor/medical-record", label: "Rekam Medis" },
+    { link: "/doctor/medical-records", label: "Rekam Medis" },
   ],
 
   PERAWAT: [
-    { link: "/nurse/queue", label: "Antrean" },
+    { link: "/nurse/queues", label: "Antrean" },
   ],
 };
 

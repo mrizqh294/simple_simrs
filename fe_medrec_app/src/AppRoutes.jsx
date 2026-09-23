@@ -6,11 +6,18 @@ import ProtectedRoute from "./ProtectedRoute";
 import AppLayout from "./assets/pages/Layout";
 import Unauthorized from "./assets/pages/UnauthorizedPage";
 import VisitPage from "./assets/pages/VisitPage";
+import MedicalRecordPage from "./assets/pages/MedicalRecordPage";
+import PublicRoute from "./PublicRoute";
 
 export const router = createBrowserRouter([
   {
-    path: "/",
-    element: <Login />,
+    element: <PublicRoute />,
+    children: [
+      {
+        path: "/",
+        element: <Login />,
+      },
+    ],
   },
 
   {
@@ -37,7 +44,7 @@ export const router = createBrowserRouter([
         element: <AppLayout />,
         children: [
           {
-            path: "queue",
+            path: "queues",
             element: <QueuePage />,
           },
         ],
@@ -56,6 +63,10 @@ export const router = createBrowserRouter([
             path: "visits",
             element: <VisitPage />,
           },
+          {
+            path: "medical-records",
+            element: <MedicalRecordPage />
+          }
         ],
       },
     ],

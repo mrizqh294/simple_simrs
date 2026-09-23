@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import { getVisits } from "./../services/visitServices";
 
-export const useVisit = ({ page = 1, limit = 10 }) => {
+export const useVisit = ({ page = 1, limit = 10, filter ="" }) => {
   const [visits, setVisits] = useState([]);
   const [totalPages, setTotalPages] = useState([]);
 
@@ -14,7 +14,7 @@ export const useVisit = ({ page = 1, limit = 10 }) => {
       setLoading(true);
       setError("");
 
-      const result = await getVisits({ page, limit });
+      const result = await getVisits({ page, limit, filter });
 
       setVisits(result.data);
       setTotalPages(result.pagination.totalPages);
@@ -28,7 +28,7 @@ export const useVisit = ({ page = 1, limit = 10 }) => {
 
   useEffect(() => {
     loadVisit();
-  }, [page, limit]);
+  }, [page, limit, filter]);
 
   return {
     visits,

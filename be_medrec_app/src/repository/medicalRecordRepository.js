@@ -22,17 +22,11 @@ export const createMedicalRecord = async (data) => {
   });
 };
 
-export const getMedicalRecords = async (patientId) => {
-  const where = {};
-
-  if (patientId) {
-    where.visit = {
-      patientId: Number(patientId),
-    };
-  }
-
+export const getMedicalRecords = async ({ where, skip, take }) => {
   return prisma.medicalRecord.findMany({
     where,
+    ...(skip !== undefined && { skip }),
+    ...(take !== undefined && { take }),
     include: {
       doctor: {
         select: {
@@ -59,5 +53,11 @@ export const getMedicalRecords = async (patientId) => {
     orderBy: {
       createdAt: "desc",
     },
+  });
+};
+
+export const countMedicalRecords = async (where) => {
+  return await prisma.medicalRecord.count({
+    where,
   });
 };

@@ -7,6 +7,7 @@ import { createMedicalRecord } from "../services/medicalRecordServices";
 
 const VisitPage = () => {
   const [page, setPage] = useState(1);
+  const [status, setStatus] = useState("");
   const [activeModal, setActiveModal] = useState(null);
   const [formData, setFormData] = useState({});
   const [selectedVisit, setSelectedVisit] = useState(null);
@@ -16,12 +17,12 @@ const VisitPage = () => {
   const { visits, totalPages, refetchVisit } = useVisit({
     page,
     limit: LIMIT,
+    filter: status,
   });
 
   const getStatusLabel = (status) => {
     const statusMap = {
       MENUNGGU: "Menunggu",
-      DIPERIKSA: "Diperiksa",
       BATAL: "Dibatalkan",
       SELESAI: "Selesai",
     };
@@ -32,7 +33,6 @@ const VisitPage = () => {
   const getStatusClass = (status) => {
     const statusMap = {
       MENUNGGU: "bg-yellow-50 text-yellow-700",
-      DIPERIKSA: "bg-green-50 text-green-700",
       BATAL: "bg-red-50 text-red-600",
       SELESAI: "bg-blue-50 text-blue-700",
     };
@@ -48,11 +48,21 @@ const VisitPage = () => {
   const closeModal = () => {
     setActiveModal(null);
     setSelectedVisit(null);
+    setFormData({});
   };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleStatusChange = (event) => {
+    setStatus(event.target.value);
+    setPage(1);
   };
 
   const handlePageChange = (newPage) => {
@@ -95,7 +105,7 @@ const VisitPage = () => {
         {/* PAGE HEADER */}
         <div className="mb-6">
           <h1 className="text-2xl font-semibold text-gray-800">
-            Daftar Kunjungan
+            Daftar Kunjungan Hari Ini
           </h1>
 
           <p className="mt-1 text-sm text-gray-500">
@@ -106,14 +116,28 @@ const VisitPage = () => {
         {/* VISIT TABLE CARD */}
         <div className="rounded-xl border border-gray-100 bg-white shadow-sm">
           {/* TABLE HEADER */}
-          <div className="border-b border-gray-100 p-5">
-            <h2 className="text-base font-semibold text-gray-800">
-              Daftar Kunjungan
-            </h2>
+          <div className="flex flex-col gap-4 border-b border-gray-100 p-5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-base font-semibold text-gray-800">
+                Daftar Kunjungan
+              </h2>
 
-            <p className="mt-1 text-xs text-gray-400">
-              Daftar pasien yang menunggu pemeriksaan.
-            </p>
+              <p className="mt-1 text-xs text-gray-400">
+                Daftar pasien yang memiliki kunjungan.
+              </p>
+            </div>
+
+            {/* STATUS FILTER */}
+            <select
+              value={status}
+              onChange={handleStatusChange}
+              className="rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-100"
+            >
+              <option value="">Semua Status</option>
+              <option value="MENUNGGU">Menunggu</option>
+              <option value="SELESAI">Selesai</option>
+              <option value="BATAL">Dibatalkan</option>
+            </select>
           </div>
 
           {/* TABLE */}
