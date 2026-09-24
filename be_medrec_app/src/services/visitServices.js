@@ -21,16 +21,14 @@ export const getVisits = async ({ page, limit, filter }, userId, role) => {
         lte: endOfDay,
       },
     };
-
-    if (filter) {
-      where.status = filter;
-    }
   } else if (role === "PENDAFTARAN") {
     where = {
       receptionistId: userId,
     };
-  } else {
-    where = {}
+  }
+
+  if (filter) {
+    where.status = filter;
   }
 
   const [visits, total] = await Promise.all([
