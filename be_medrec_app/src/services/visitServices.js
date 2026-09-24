@@ -29,6 +29,8 @@ export const getVisits = async ({ page, limit, filter }, userId, role) => {
     where = {
       receptionistId: userId,
     };
+  } else {
+    where = {}
   }
 
   const [visits, total] = await Promise.all([

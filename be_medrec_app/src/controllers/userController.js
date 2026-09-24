@@ -22,14 +22,20 @@ export const createUser = async (req, res) => {
 
 export const getUsers = async (req, res) => {
   try {
-    const { role } = req.query;
+    const page = Math.max(Number(req.query.page) || 1, 1);
 
-    const users = await userRepository.getUsers(role);
+    const limit = Math.min(Math.max(Number(req.query.limit) || 10, 1), 100);
+
+    const search = req.query.search?.trim() || "";
+
+    const filter = req.query.filter?.trim() || "";
+
+    const users = await userServices.getUsers({ page, limit, search, filter });
 
     return res.status(200).json({
       success: true,
       message: "Data users berhasil dimuat",
-      data: users,
+      ...users,
     });
   } catch (error) {
     console.error(error);

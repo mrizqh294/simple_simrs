@@ -8,6 +8,7 @@ import Unauthorized from "./assets/pages/UnauthorizedPage";
 import VisitPage from "./assets/pages/VisitPage";
 import MedicalRecordPage from "./assets/pages/MedicalRecordPage";
 import PublicRoute from "./PublicRoute";
+import UserPage from "./assets/pages/UserPage";
 
 export const router = createBrowserRouter([
   {
@@ -21,7 +22,7 @@ export const router = createBrowserRouter([
   },
 
   {
-    element: <ProtectedRoute allowedRoles={["PENDAFTARAN"]} />,
+    element: <ProtectedRoute allowedRoles={["PENDAFTARAN", "ADMIN"]} />,
     children: [
       {
         element: <AppLayout />,
@@ -37,10 +38,9 @@ export const router = createBrowserRouter([
   },
 
   {
-    element: <ProtectedRoute allowedRoles={["PERAWAT"]} />,
+    element: <ProtectedRoute allowedRoles={["PERAWAT", "ADMIN"]} />,
     children: [
       {
-        path:"/nurse/",
         element: <AppLayout />,
         children: [
           {
@@ -53,20 +53,46 @@ export const router = createBrowserRouter([
   },
 
   {
-    element: <ProtectedRoute allowedRoles={["DOKTER"]} />,
+    element: <ProtectedRoute allowedRoles={["DOKTER", "ADMIN", "PENDAFTARAN"]} />,
     children: [
       {
-        path:"/doctor/",
         element: <AppLayout />,
         children: [
           {
             path: "visits",
             element: <VisitPage />,
           },
+        ],
+      },
+    ],
+  },
+
+  {
+    element: <ProtectedRoute allowedRoles={["DOKTER"]} />,
+    children: [
+      {
+        element: <AppLayout />,
+        children: [
           {
             path: "medical-records",
-            element: <MedicalRecordPage />
-          }
+            element: <MedicalRecordPage />,
+          },
+        ],
+      },
+    ],
+  },
+
+  {
+    element: <ProtectedRoute allowedRoles={["ADMIN"]} />,
+    children: [
+      {
+        element: <AppLayout />,
+
+        children: [
+          {
+            path: "users",
+            element: <UserPage />,
+          },
         ],
       },
     ],
@@ -74,6 +100,6 @@ export const router = createBrowserRouter([
 
   {
     path: "/unauthorized",
-    element: <Unauthorized />
-  }
+    element: <Unauthorized />,
+  },
 ]);

@@ -44,11 +44,15 @@ const Login = () => {
       }
 
       if (result.data.role === "DOKTER") {
-        navigate("/doctor/visits");
+        navigate("/visits");
       }
 
       if (result.data.role === "PERAWAT") {
-        navigate("/nurse/queues");
+        navigate("/queues");
+      }
+
+      if (result.data.role === "ADMIN") {
+        navigate("/users");
       }
     } catch (error) {
       console.error("Login gagal:", error);

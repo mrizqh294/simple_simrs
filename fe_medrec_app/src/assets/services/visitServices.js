@@ -18,6 +18,13 @@ export const createVisit = async (visitData) => {
   });
 };
 
+export const updateVisit = async (id, updatedData) => {
+  return await fetchApi(`/visits/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(updatedData),
+  });
+};
+
 export const updateVisitStatus = async (id, statusData) => {
   return await fetchApi(`/visits/${id}/status`, {
     method: "PATCH",

@@ -1,6 +1,53 @@
 import bcrypt from "bcryptjs";
 import * as userRepository from "../repository/userRepository.js";
 
+export const getUsers = async ({ page, limit, search, filter }) => {
+  const skip = (page - 1) * limit;
+  
+  const where = {
+    ...(filter && {
+      role: filter,
+    }),
+
+    ...(search && {
+      OR: [
+        {
+          name: {
+            contains: search,
+          },
+        },
+        {
+          email: {
+            contains: search,
+          },
+        },
+      ],
+    }),
+  };
+
+  const [users, total] = await Promise.all([
+    userRepository.getUsers({
+      where,
+      skip,
+      take: limit,
+    }),
+
+    userRepository.countUsers(where),
+  ]);
+
+  const totalPages = Math.ceil(total / limit);
+
+  return {
+    data: users,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages,
+    },
+  };
+};
+
 export const createUser = async (data) => {
   const existingUser = await userRepository.findUserByEmail(data.email);
 

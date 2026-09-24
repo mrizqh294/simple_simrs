@@ -3,13 +3,26 @@ import Input from "../Input";
 import Select from "../Select";
 import Textarea from "../Textarea";
 
-const EditPatientModal = ({ show, onClose, onSubmit, formData, onChange }) => {
+const PatientModal = ({
+  show,
+  onClose,
+  onSubmit,
+  formData,
+  onChange,
+  mode,
+}) => {
+  const isEdit = mode === "edit";
+
   return (
     <Modal
       show={show}
       onClose={onClose}
-      title="Edit Data Pasien"
-      description="Masukkan data pasien untuk mengubah data"
+      title={isEdit ? "Edit Data Pasien" : "Tambah Pasien"}
+      description={
+        isEdit
+          ? "Ubah data pasien yang sudah terdaftar."
+          : "Masukkan data pasien baru."
+      }
       size="4xl"
     >
       <form onSubmit={onSubmit}>
@@ -107,7 +120,7 @@ const EditPatientModal = ({ show, onClose, onSubmit, formData, onChange }) => {
             type="submit"
             className="cursor-pointer rounded-lg bg-green-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
           >
-            Simpan
+            {isEdit ? "Simpan" : "Tambah Pasien"}
           </button>
         </div>
       </form>
@@ -115,4 +128,4 @@ const EditPatientModal = ({ show, onClose, onSubmit, formData, onChange }) => {
   );
 };
 
-export default EditPatientModal;
+export default PatientModal;

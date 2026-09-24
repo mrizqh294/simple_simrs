@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { registerPatient } from "../services/registrationServices";
 import { createVisit } from "../services/visitServices";
-import { updatePatient } from "../services/patientServices";
+import {
+  updatePatient,
+  deletePatient,
+  createPatient,
+} from "../services/patientServices";
 import { usePatient } from "../hooks/usePatient";
 import { usePoli } from "../hooks/usePoli";
 import { useDoctor } from "../hooks/useDoctor";
@@ -9,7 +13,7 @@ import Pagination from "../components/Pagination";
 import PatientTable from "../components/table/PatientTable";
 import RegisterPatientModal from "../components/modal/RegistrationModal";
 import VisitModal from "../components/modal/VisitModal";
-import EditPatientModal from "../components/modal/EditPatientModal";
+import PatientModal from "../components/modal/PatientModal";
 
 const Registration = () => {
   const [search, setSearch] = useState("");
@@ -18,6 +22,9 @@ const Registration = () => {
   const [activeModal, setActiveModal] = useState(null);
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [selectedPoliId, setSelectedPoliId] = useState(null);
+
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const role = user.role;
 
   const LIMIT = 10;
 
@@ -31,11 +38,27 @@ const Registration = () => {
   const { doctors } = useDoctor(selectedPoliId);
 
   const openRegisterModal = () => {
+    setFormData({});
     setActiveModal("register");
+  };
+
+  const openAddPatientModal = () => {
+    setFormData({
+      nik: "",
+      name: "",
+      age: "",
+      gender: "",
+      birthdate: "",
+      phone: "",
+      address: "",
+    });
+
+    setActiveModal("add");
   };
 
   const openVisitModal = (patient) => {
     setSelectedPatient(patient);
+    setFormData({});
     setActiveModal("visit");
   };
 
@@ -58,11 +81,16 @@ const Registration = () => {
     setActiveModal(null);
     setSelectedPatient(null);
     setFormData({});
+    setSelectedPoliId(null);
   };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
 
     if (name === "poliId") {
       setSelectedPoliId(value);
@@ -82,6 +110,24 @@ const Registration = () => {
     setPage(1);
   };
 
+  const handleDeletePatient = async (id) => {
+    try {
+      const result = await deletePatient(id);
+
+      if (!result?.success) {
+        alert(result?.message || "Gagal menghapus pasien");
+        return;
+      }
+
+      alert(result.message || "Pasien berhasil dihapus");
+
+      await refetchPatient();
+    } catch (error) {
+      console.error(error);
+      alert(error.message || "Terjadi kesalahan pada server");
+    }
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -89,6 +135,18 @@ const Registration = () => {
       let result;
 
       switch (activeModal) {
+        case "add":
+          result = await createPatient({
+            nik: formData.nik,
+            name: formData.name,
+            age: Number(formData.age),
+            gender: formData.gender,
+            birthdate: formData.birthdate,
+            phone: formData.phone,
+            address: formData.address,
+          });
+          break;
+
         case "register":
           result = await registerPatient({
             ...formData,
@@ -134,6 +192,7 @@ const Registration = () => {
 
       closeModal();
     } catch (error) {
+      console.error(error);
       alert(error.message || "Terjadi kesalahan pada server");
     }
   };
@@ -144,12 +203,16 @@ const Registration = () => {
         {/* PAGE HEADER */}
         <div className="mb-6">
           <h1 className="text-2xl font-semibold text-gray-800">
-            Registrasi Pasien
+            {role === "ADMIN" ? "Kelola Data Pasien" : "Registrasi Pasien"}
           </h1>
+
           <p className="mt-1 text-sm text-gray-500">
-            Kelola data pasien dan registrasi kunjungan.
+            {role === "ADMIN"
+              ? "Kelola data pasien dan registrasi."
+              : "Kelola data pasien dan registrasi kunjungan."}
           </p>
         </div>
+
         {/* PATIENT TABLE CARD */}
         <div className="rounded-xl border border-gray-100 bg-white shadow-sm">
           {/* TABLE HEADER */}
@@ -158,10 +221,12 @@ const Registration = () => {
               <h2 className="text-base font-semibold text-gray-800">
                 Daftar Pasien
               </h2>
+
               <p className="mt-1 text-xs text-gray-400">
                 Cari pasien berdasarkan nama, NIK, atau nomor rekam medis.
               </p>
             </div>
+
             <div className="flex flex-col gap-3 sm:flex-row">
               {/* SEARCH */}
               <div className="relative">
@@ -173,16 +238,28 @@ const Registration = () => {
                   className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-100 sm:w-80"
                 />
               </div>
-              {/* REGISTER BUTTON */}
-              <button
-                type="button"
-                onClick={openRegisterModal}
-                className="rounded-lg cursor-pointer bg-green-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-              >
-                Registrasi Pasien Baru
-              </button>
+
+              {/* BUTTON */}
+              {role === "ADMIN" ? (
+                <button
+                  type="button"
+                  onClick={openAddPatientModal}
+                  className="cursor-pointer rounded-lg bg-green-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                >
+                  Tambah Pasien
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={openRegisterModal}
+                  className="cursor-pointer rounded-lg bg-green-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                >
+                  Registrasi Pasien Baru
+                </button>
+              )}
             </div>
           </div>
+
           {/* TABLE */}
           <PatientTable
             patients={patients}
@@ -190,7 +267,9 @@ const Registration = () => {
             limit={LIMIT}
             onEdit={openEditModal}
             onVisit={openVisitModal}
+            onDelete={handleDeletePatient}
           />
+
           {/* TABLE FOOTER */}
           <div className="border-t border-gray-100 px-5 py-4">
             <Pagination
@@ -213,7 +292,7 @@ const Registration = () => {
         doctors={doctors}
       />
 
-      {/* MODAL VISIT PASIEN*/}
+      {/* MODAL VISIT PASIEN */}
       <VisitModal
         show={activeModal === "visit"}
         onClose={closeModal}
@@ -225,9 +304,10 @@ const Registration = () => {
         doctors={doctors}
       />
 
-      {/* MODAL EDIT PASIEN */}
-      <EditPatientModal
-        show={activeModal === "edit"}
+      {/* MODAL TAMBAH EDIT PASIEN */}
+      <PatientModal
+        show={activeModal === "add" || activeModal === "edit"}
+        mode={activeModal}
         onClose={closeModal}
         onSubmit={handleSubmit}
         formData={formData}

@@ -5,25 +5,24 @@ import Header from "./../components/Header";
 const MENUS = {
   ADMIN: [
     { link: "/dashboard", label: "Dashboard" },
-    { link: "/registration", label: "Registrasi" },
-    { link: "/user", label: "Manajemen User" },
-    { link: "/queue", label: "Antrean" },
-    { link: "/patient", label: "Pasien" },
-    { link: "/visit", label: "Kunjungan" },
-    { link: "/medical-record", label: "Rekam Medis" },
+    { link: "/users", label: "Manajemen User" },
+    { link: "/registration", label: "Pasien" },
+    { link: "/queues", label: "Antrean" },
+    { link: "/visits", label: "Kunjungan" },
   ],
 
   PENDAFTARAN: [
     { link: "/registration", label: "Registrasi" },
+    { link: "/visits", label: "Riwayat Kunjungan" },
   ],
 
   DOKTER: [
-    { link: "/doctor/visits", label: "Kunjungan" },
-    { link: "/doctor/medical-records", label: "Rekam Medis" },
+    { link: "/visits", label: "Kunjungan" },
+    { link: "/medical-records", label: "Rekam Medis" },
   ],
 
   PERAWAT: [
-    { link: "/nurse/queues", label: "Antrean" },
+    { link: "/queues", label: "Antrean" },
   ],
 };
 

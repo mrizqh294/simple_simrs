@@ -10,6 +10,12 @@ export const findUserByEmail = async (email) => {
   return user;
 };
 
+export const countUsers = async (where) => {
+  return await prisma.user.count({
+    where,
+  });
+};
+
 export const getUsersByRole = async (role, poliId) => {
   const users = await prisma.user.findMany({
     where: {
@@ -57,19 +63,17 @@ export const createUser = async (data) => {
   return user;
 };
 
-export const getUsers = async (role) => {
+export const getUsers = async ({where, skip, take}) => {
   const users = await prisma.user.findMany({
+    where,
+    skip,
+    take,
     select: {
       id: true,
       name: true,
       email: true,
       role: true,
-    },
-    where: role
-      ? {
-          role: role,
-        }
-      : undefined,
+    }
   });
 
   return users;

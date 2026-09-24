@@ -13,6 +13,7 @@ const VisitModal = ({
   polies,
   doctors,
 }) => {
+  console.log("form data :", formData)
   return (
     <Modal
       show={show}

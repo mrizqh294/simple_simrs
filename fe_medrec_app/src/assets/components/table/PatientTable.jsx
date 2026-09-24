@@ -1,6 +1,28 @@
 import { Table, Th, Td, EmptyRow } from "../Table";
 
-const PatientTable = ({ patients, page = 1, limit = 10, onEdit, onVisit }) => {
+const PatientTable = ({
+  patients,
+  page = 1,
+  limit = 10,
+  onEdit,
+  onVisit,
+  onDelete,
+}) => {
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const role = user.role;
+
+  const handleDelete = (patient) => {
+    const confirmed = window.confirm(
+      `Apakah Anda yakin ingin menghapus pasien "${patient.name}"?`,
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    onDelete(patient.id);
+  };
+
   return (
     <Table>
       <thead>
@@ -44,21 +66,55 @@ const PatientTable = ({ patients, page = 1, limit = 10, onEdit, onVisit }) => {
 
               <Td className="text-center">
                 <div className="flex items-center justify-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => onEdit(patient)}
-                    className="cursor-pointer rounded-lg border border-gray-200 px-3 py-2 text-xs font-medium text-gray-600 transition hover:bg-gray-50 hover:text-gray-800"
-                  >
-                    Edit
-                  </button>
+                  {/* ADMIN */}
+                  {role === "ADMIN" && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => onEdit(patient)}
+                        className="cursor-pointer rounded-lg border border-gray-200 px-3 py-2 text-xs font-medium text-gray-600 transition hover:bg-gray-50 hover:text-gray-800"
+                      >
+                        Edit
+                      </button>
 
-                  <button
-                    type="button"
-                    onClick={() => onVisit(patient)}
-                    className="cursor-pointer rounded-lg bg-green-50 px-3 py-2 text-xs font-medium text-green-700 transition hover:bg-green-100"
-                  >
-                    Tambah Kunjungan
-                  </button>
+                      <button
+                        type="button"
+                        onClick={() => onVisit(patient)}
+                        className="cursor-pointer rounded-lg bg-green-50 px-3 py-2 text-xs font-medium text-green-700 transition hover:bg-green-100"
+                      >
+                        Kunjungan
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(patient)}
+                        className="cursor-pointer rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-red-700 transition hover:bg-red-100"
+                      >
+                        Hapus
+                      </button>
+                    </>
+                  )}
+
+                  {/* PENDAFTARAN */}
+                  {role === "PENDAFTARAN" && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => onEdit(patient)}
+                        className="cursor-pointer rounded-lg border border-gray-200 px-3 py-2 text-xs font-medium text-gray-600 transition hover:bg-gray-50 hover:text-gray-800"
+                      >
+                        Edit
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => onVisit(patient)}
+                        className="cursor-pointer rounded-lg bg-green-50 px-3 py-2 text-xs font-medium text-green-700 transition hover:bg-green-100"
+                      >
+                        Kunjungan
+                      </button>
+                    </>
+                  )}
                 </div>
               </Td>
             </tr>

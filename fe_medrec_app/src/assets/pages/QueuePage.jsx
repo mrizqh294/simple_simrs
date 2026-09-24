@@ -14,7 +14,7 @@ const QueuePage = () => {
     page,
     limit: LIMIT,
     search,
-    filter : statusFilter,
+    filter: statusFilter,
   });
 
   const getStatusLabel = (status) => {

@@ -117,7 +117,7 @@ export const updateVisit = async (req, res) => {
         id: visit.id,
         patientId: visit.patientId,
         doctorId: visit.doctorId,
-        recepsionistId: visit.recepsionistId,
+        receptionistId: visit.receptionistId,
         visitDate: visit.visitDate,
         description: visit.description,
         status: visit.status,
